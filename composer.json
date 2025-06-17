@@ -26,7 +26,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Kroderdev\\LaravelMicroserviceCore\\MicroserviceServiceProvider"
+                "Kroderdev\\LaravelMicroserviceCore\\Providers\\MicroserviceServiceProvider"
             ]
         }
     },
