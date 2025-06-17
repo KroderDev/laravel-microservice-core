@@ -37,8 +37,15 @@ class ValidateJwt
             // Auth from JWT
             $user = new ExternalUser((array) $decoded);
 
-            // Get Permissions
-            $access = app(PermissionsClient::class)->getAccessFor($user);
+            // Get Permissions, permits tolerance
+            try {
+                $access = app(PermissionsClient::class)->getAccessFor($user);
+            } catch (\Throwable $e) {
+                $access = [
+                    'roles' => [],
+                    'permissions' => [],
+                ];
+            }
 
             $user->loadAccess(
                 $access['roles'] ?? [],
