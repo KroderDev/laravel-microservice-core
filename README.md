@@ -23,8 +23,8 @@ This package provides a robust foundation for building Laravel-based microservic
 - **Configurable Middleware Aliases & Groups:**  
   Easily enable, disable, or rename middleware via configuration, and use convenient groups like `microservice.auth` group for full authentication and authorization in one step.
 
-- **HTTP Client Macros:**  
-  Pre-configured HTTP clients for communicating with your API Gateway or other services.
+- **HTTP Client Macros:**
+  Pre-configured HTTP clients for communicating with your API Gateway or other services. When a request is available, these macros automatically forward the current correlation ID header.
 
 - **Ready-to-publish Configuration:**  
   All settings are customizable via a single config file, making it easy to adapt the package to your environment.

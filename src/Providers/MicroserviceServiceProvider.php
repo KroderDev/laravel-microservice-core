@@ -80,29 +80,49 @@ class MicroserviceServiceProvider extends ServiceProvider
 
         // HTTP
         Http::macro('apiGateway', function () {
+            // Correlation ID
+            $header = config('microservice.correlation.header');
+            $correlation = app()->bound('request') ? request()->header($header) : null;
+
             return Http::acceptJson()
+                ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('services.api_gateway.url'))
                 ->timeout(5)
                 ->retry(2, 100);
         });
 
         Http::macro('apiGatewayDirect', function () {
+            // Correlation ID
+            $header = config('microservice.correlation.header');
+            $correlation = app()->bound('request') ? request()->header($header) : null;
+
             return Http::acceptJson()
+                ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('services.api_gateway.url'))
                 ->timeout(5);
         });
 
         Http::macro('apiGatewayWithToken', function (string $token) {
+            // Correlation ID
+            $header = config('microservice.correlation.header');
+            $correlation = app()->bound('request') ? request()->header($header) : null;
+
             return Http::acceptJson()
                 ->withToken($token)
+                ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('services.api_gateway.url'))
                 ->timeout(5)
                 ->retry(2, 100);
         });
 
         Http::macro('apiGatewayDirectWithToken', function (string $token) {
+            // Correlation ID
+            $header = config('microservice.correlation.header');
+            $correlation = app()->bound('request') ? request()->header($header) : null;
+
             return Http::acceptJson()
                 ->withToken($token)
+                ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('services.api_gateway.url'))
                 ->timeout(5);
         });
