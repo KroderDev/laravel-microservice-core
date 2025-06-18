@@ -7,6 +7,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +32,9 @@ class ValidateJwt
         $token = substr($authHeader, 7);
 
         try {
-            $publicKey = file_get_contents(config('microservice.auth.jwt_public_key'));
+            $publicKey = Cache::remember('jwt_cache_ttl', config('microservice.auth.public_key_ttl', 3600), function() {
+                return file_get_contents(config('microservice.auth.jwt_cache_ttl'));
+            });
 
             $decoded = JWT::decode($token, new Key($publicKey, config('microservice.auth.jwt_algorithm')));
 

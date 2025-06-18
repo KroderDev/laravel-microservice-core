@@ -86,6 +86,7 @@ Validates the presence and integrity of a JSON Web Token (JWT) in the `Authoriza
 'auth' => [
     'jwt_public_key' => env('JWT_PUBLIC_KEY_PATH'),
     'jwt_algorithm' => env('JWT_ALGORITHM', 'RS256'),
+    'jwt_cache_ttl' => env('JWT_CACHE_TTL', 3600),
     'header' => 'Authorization',
     'prefix' => 'Bearer', 
 ],

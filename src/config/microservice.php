@@ -50,6 +50,14 @@ return [
          */
         'jwt_algorithm' => env('JWT_ALGORITHM', 'RS256'),
 
+
+        /**
+         * The time-to-live (TTL) in seconds for caching JWT keys.
+         * Determines how long the JWT key will be stored in cache before it expires.
+         * Default is 3600 seconds (1 hour).
+         */
+        'jwt_cache_ttl' => env('JWT_CACHE_TTL', 3600),
+
         /**
          * Authorization Header:
          * The HTTP header from which to extract the JWT token.
