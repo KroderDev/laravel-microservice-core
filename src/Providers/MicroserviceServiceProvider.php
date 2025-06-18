@@ -47,15 +47,13 @@ class MicroserviceServiceProvider extends ServiceProvider
         $aliases = config('microservice.middleware_aliases', []);
 
         // JWT Middleware alias
-        $jwtAlias = $aliases['jwt_auth'] ?? null;
-        if (!empty($jwtAlias)) {
-            $router->aliasMiddleware($jwtAlias, ValidateJwt::class);
+        if (!empty($aliases['jwt_auth'])) {
+            $router->aliasMiddleware($aliases['jwt_auth'], ValidateJwt::class);
         }
 
         // Correlation ID middleware alias
-        $corrAlias = $aliases['correlation_id'] ?? null;
-        if (! empty($corrAlias)) {
-            $router->aliasMiddleware($corrAlias, CorrelationId::class);
+        if (! empty($aliases['correlation_id'])) {
+            $router->aliasMiddleware($aliases['correlation_id'], CorrelationId::class);
             $router->prependMiddlewareToGroup('api', CorrelationId::class);
         }
 
@@ -71,7 +69,7 @@ class MicroserviceServiceProvider extends ServiceProvider
 
         // LoadAccess middleware alias
         if (! empty($aliases['load_access'] ?? '')) {
-            $router->aliasMiddleware($aliases['load.access'], PermissionMiddleware::class);
+            $router->aliasMiddleware($aliases['load_access'], LoadAccess::class);
         }
 
         // Auth middleware group
