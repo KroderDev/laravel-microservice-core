@@ -4,6 +4,33 @@
 
 A toolkit to leverage **Laravel 12** as a performant and configurable microservice framework within distributed architectures.  
 
+## Overview
+
+This package provides a robust foundation for building Laravel-based microservices, focusing on stateless authentication, authorization, and distributed system best practices. Out of the box, you’ll find:
+
+- **JWT Authentication Middleware:**  
+  Securely validates JWT tokens and hydrates the authenticated user for each request.
+
+- **Role & Permission Middleware:**  
+  Restrict access to routes based on user roles or permissions, with support for both JWT-embedded and dynamically loaded access control.
+
+- **LoadAccess Middleware:**  
+  Optionally fetches the latest roles and permissions for the authenticated user from a centralized permission service or API Gateway.
+
+- **Correlation ID Middleware:**  
+  Automatically generates or propagates a unique correlation ID for every request, enabling end-to-end tracing across distributed systems.
+
+- **Configurable Middleware Aliases & Groups:**  
+  Easily enable, disable, or rename middleware via configuration, and use convenient groups like `microservice.auth` group for full authentication and authorization in one step.
+
+- **HTTP Client Macros:**  
+  Pre-configured HTTP clients for communicating with your API Gateway or other services.
+
+- **Ready-to-publish Configuration:**  
+  All settings are customizable via a single config file, making it easy to adapt the package to your environment.
+
+This toolkit is designed to be flexible, extensible, and easy to integrate into any Laravel microservice architecture.
+
 ## Installation
 
 Install directly from Packagist via Composer:
