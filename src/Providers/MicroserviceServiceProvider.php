@@ -3,13 +3,15 @@
 namespace Kroderdev\LaravelMicroserviceCore\Providers;
 
 use Illuminate\Foundation\Http\Kernel;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
-use Kroderdev\LaravelMicroserviceCore\Middleware\ValidateJwt;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClientFactory;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\CorrelationId;
 
 class MicroserviceServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,11 @@ class MicroserviceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Config
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/microservice.php', 'microservice'
+        );
+
         $this->app->singleton(ApiGatewayClientFactory::class, fn () => new ApiGatewayClientFactory());
         $this->app->singleton(ApiGatewayClient::class, fn () => ApiGatewayClient::make());
         $this->app->bind(ApiGatewayClientInterface::class, fn($app) => $app->make(ApiGatewayClientFactory::class)->default()); 
@@ -27,8 +34,29 @@ class MicroserviceServiceProvider extends ServiceProvider
     /**
      * Bootstrap services.
      */
-    public function boot(): void
+    public function boot(Router $router): void
     {
+        // Publish config
+        $this->publishes([
+            __DIR__.'/../config/microservice.php' => config_path('microservice.php'),
+        ]);
+
+        $aliases = config('microservice-core.middleware_aliases', []);
+
+        // JWT Middleware alias
+        $jwtAlias = $aliases['jwt_auth'] ?? null;
+        if (!empty($jwtAlias)) {
+            $router->aliasMiddleware($jwtAlias, ValidateJwt::class);
+        }
+
+        // Correlation ID middleware alias
+        $corrAlias = $aliases['correlation_id'] ?? null;
+        if (! empty($corrAlias)) {
+            $router->aliasMiddleware($corrAlias, CorrelationId::class);
+            $router->prependMiddlewareToGroup('api', CorrelationId::class);
+        }
+
+
         // HTTP
         Http::macro('apiGateway', function () {
             return Http::acceptJson()

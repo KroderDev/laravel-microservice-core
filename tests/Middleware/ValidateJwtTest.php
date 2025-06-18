@@ -4,7 +4,7 @@ namespace Tests\Middleware;
 
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
-use Kroderdev\LaravelMicroserviceCore\Middleware\ValidateJwt;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Orchestra\Testbench\TestCase;
 use Firebase\JWT\JWT;

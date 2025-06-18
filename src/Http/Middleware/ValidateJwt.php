@@ -1,6 +1,6 @@
 <?php
 
-namespace Kroderdev\LaravelMicroserviceCore\Middleware;
+namespace Kroderdev\LaravelMicroserviceCore\Http\Middleware;
 
 use Closure;
 use Firebase\JWT\JWT;
@@ -21,9 +21,10 @@ class ValidateJwt
     public function handle(Request $request, Closure $next): Response
     {
         $header = config('microservice.auth.header', 'Authorization');
+        $prefix = config('microservice.auth.prefix', 'Bearer');
         $authHeader = $request->header($header);
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+        if (!$authHeader || !str_starts_with($authHeader, (string)$prefix . ' ')) {
             return response()->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
