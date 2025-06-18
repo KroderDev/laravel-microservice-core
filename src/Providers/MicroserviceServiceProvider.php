@@ -39,7 +39,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         // Publish config
         $this->publishes([
             __DIR__.'/../config/microservice.php' => config_path('microservice.php'),
-        ]);
+        ], 'config');
 
         $aliases = config('microservice-core.middleware_aliases', []);
 
@@ -55,7 +55,6 @@ class MicroserviceServiceProvider extends ServiceProvider
             $router->aliasMiddleware($corrAlias, CorrelationId::class);
             $router->prependMiddlewareToGroup('api', CorrelationId::class);
         }
-
 
         // HTTP
         Http::macro('apiGateway', function () {
@@ -85,8 +84,5 @@ class MicroserviceServiceProvider extends ServiceProvider
                 ->baseUrl(config('services.api_gateway.url'))
                 ->timeout(5);
         });
-
-        // Middlewares
-        $this->app->make(Kernel::class)->pushMiddleware(ValidateJwt::class);
     }
 }
