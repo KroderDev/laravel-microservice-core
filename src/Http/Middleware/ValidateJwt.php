@@ -29,11 +29,11 @@ class ValidateJwt
             return response()->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = substr($authHeader, 7);
+        $token = substr($authHeader, strlen((string)$prefix) + 1);
 
         try {
-            $publicKey = Cache::remember('jwt_cache_ttl', config('microservice.auth.public_key_ttl', 3600), function() {
-                return file_get_contents(config('microservice.auth.jwt_cache_ttl'));
+            $publicKey = Cache::remember('jwt_public_key', config('microservice.auth.jwt_cache_ttl', 3600), function() {
+                return file_get_contents(config('microservice.auth.jwt_public_key'));
             });
 
             $decoded = JWT::decode($token, new Key($publicKey, config('microservice.auth.jwt_algorithm')));
