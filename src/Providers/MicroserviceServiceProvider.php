@@ -7,6 +7,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Http\HealthCheckController;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
@@ -77,6 +78,12 @@ class MicroserviceServiceProvider extends ServiceProvider
             ValidateJwt::class,
             LoadAccess::class,
         ]);
+
+        // Health check route
+        if (config('microservice.health.enabled', true)) {
+            $path = ltrim(config('microservice.health.path', '/api/health'), '/');
+            $router->get('/' . $path, HealthCheckController::class);
+        }
 
         // HTTP
         Http::macro('apiGateway', function () {

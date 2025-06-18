@@ -251,6 +251,35 @@ You no longer need to stack `jwt.auth` + `load.access` manually—just use `micr
 
 ---
 
+## Endpoints
+
+### Health Check Endpoint
+
+This package exposes a JSON endpoint at `/api/health` providing basic service details.
+
+#### Configuration (`config/microservice.php`)
+
+```php
+'health' => [
+    'enabled' => env('HEALTH_ENDPOINT_ENABLED', true),
+    'path'    => '/api/health',
+],
+```
+
+When enabled (default), visiting `/api/health` returns:
+
+```json
+{
+  "status": "ok",
+  "app": "your-app-name",
+  "environment": "testing",
+  "laravel": "12.x-dev",
+  "timestamp": "2025-01-01T12:00:00Z"
+}
+```
+
+---
+
 ## Public Release and Future Goals
 
 This repository is brand new, and I’m excited to develop it further! My plan is to continuously strengthen the core, add more middleware modules, expand test coverage, and refine configuration options.  
