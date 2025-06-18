@@ -23,7 +23,7 @@ After installation, publish the configuration file to your Laravel project:
 
 
 ```bash
-php artisan vendor:publish --provider="Kroderdev\LaravelMicroserviceCoreProviders\MicroserviceCoreServiceProvider"
+php artisan vendor:publish --provider="Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider"
 ```
 
 You can now customize the settings to match your microservice environment.
