@@ -41,7 +41,7 @@ class MicroserviceServiceProvider extends ServiceProvider
             __DIR__.'/../config/microservice.php' => config_path('microservice.php'),
         ], 'config');
 
-        $aliases = config('microservice-core.middleware_aliases', []);
+        $aliases = config('microservice.middleware_aliases', []);
 
         // JWT Middleware alias
         $jwtAlias = $aliases['jwt_auth'] ?? null;

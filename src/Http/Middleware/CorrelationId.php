@@ -21,7 +21,7 @@ class CorrelationId
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $cfg    = config('microservice-core.correlation');
+        $cfg    = config('microservice.correlation');
         $header = $cfg['header'];
 
         // Use existing header or generate a new UUID
