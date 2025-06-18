@@ -14,6 +14,9 @@ return [
     'middleware_aliases' => [
         'jwt_auth'       => 'jwt.auth',         // e.g. 'jwt.auth' or null
         'correlation_id' => 'correlation.id',   // e.g. 'correlation.id' or ''
+        'load_access'    => 'load.access',
+        'role'           => 'role',
+        'permission'     => 'permission',
     ],
 
 

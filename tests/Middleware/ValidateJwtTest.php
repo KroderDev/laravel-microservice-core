@@ -4,6 +4,8 @@ namespace Tests\Middleware;
 
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Orchestra\Testbench\TestCase;
@@ -23,9 +25,11 @@ class ValidateJwtTest extends TestCase
 
         $this->app->bind(ApiGatewayClientInterface::class, fn () => new FakeGatewayClient());
         
+        $this->app['router']->aliasMiddleware('permission', PermissionMiddleware::class);
+
         $this->app->singleton(PermissionsClient::class, fn () => new class {
             public function getAccessFor($user) {
-                return ['roles' => ['tester'], 'permissions' => ['view dashboard']];
+                return ['roles' => ['tester'], 'permissions' => ['view.dashboard']];
             }
         });
 
@@ -60,7 +64,10 @@ EOD;
 
         // Secured route
         Route::middleware(ValidateJwt::class)->get('/secured', fn () => response()->json(['ok' => true]));
-        
+        // Secured with permissions route
+        Route::middleware([ValidateJwt::class, LoadAccess::class, 'permission:view.dashboard'])->get('/secured-with-permissions', fn () => response()->json(['ok' => true]));
+        // Secured with permissions route
+        Route::middleware([ValidateJwt::class, LoadAccess::class, 'permission:place.order'])->get('/secured-with-permissions-2', fn () => response()->json(['ok' => true]));
     }
 
     protected function tearDown(): void
@@ -101,7 +108,6 @@ EOD;
     /** @test */
     public function test_accepts_valid_token()
     {
-        // Crear token válido con clave privada
         $payload = [
             'sub' => 'user-123',
             'iss' => 'auth-service',
@@ -110,10 +116,54 @@ EOD;
 
         $jwt = JWT::encode($payload, $this->privateKey, 'RS256');
 
-        // Guardar clave pública temporal
         file_put_contents(__DIR__ . '/tmp_public.pem', $this->publicKey);
 
         $response = $this->get('/secured', [
+            'Authorization' => "Bearer $jwt"
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['ok' => true]);
+
+        unlink(__DIR__ . '/tmp_public.pem');
+    }
+
+    /** @test */
+    public function test_rejects_valid_token_and_bad_permissions()
+    {
+        $payload = [
+            'sub' => 'user-123',
+            'iss' => 'auth-service',
+            'exp' => time() + 60,
+        ];
+
+        $jwt = JWT::encode($payload, $this->privateKey, 'RS256');
+
+        file_put_contents(__DIR__ . '/tmp_public.pem', $this->publicKey);
+
+        $response = $this->get('/secured-with-permissions-2', [
+            'Authorization' => "Bearer $jwt"
+        ]);
+
+        $response->assertStatus(403);
+
+        unlink(__DIR__ . '/tmp_public.pem');
+    }
+
+    /** @test */
+    public function test_accepts_valid_token_and_permissions()
+    {
+        $payload = [
+            'sub' => 'user-123',
+            'iss' => 'auth-service',
+            'exp' => time() + 60,
+        ];
+
+        $jwt = JWT::encode($payload, $this->privateKey, 'RS256');
+
+        file_put_contents(__DIR__ . '/tmp_public.pem', $this->publicKey);
+
+        $response = $this->get('/secured-with-permissions', [
             'Authorization' => "Bearer $jwt"
         ]);
 

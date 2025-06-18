@@ -86,6 +86,77 @@ Route::middleware(['jwt.auth'])->group(function () {
 
 ---
 
+### LoadAccess
+
+**Alias**: the string you assign to `load_access` in `middleware_aliases`, e.g. `load.access`.  
+**Class**: `Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess`
+
+#### Description
+
+Loads the authenticated user's roles and permissions, typically from a centralized permission service (such as an API Gateway or dedicated permissions microservice).  
+By default, the `ValidateJwt` middleware will automatically load `roles` and `permissions` from the JWT payload if they are present.  
+However, if you have a centralized permission service, you can use `LoadAccess` to fetch and hydrate the latest roles and permissions for the user, ensuring up-to-date authorization data.
+
+#### Usage
+
+Apply after JWT authentication, or use the `microservice.auth` group for both:
+
+```php
+// In routes/api.php
+Route::middleware(['jwt.auth', 'load.access'])->group(function () {
+    // protected routes with up-to-date permissions…
+});
+
+// Or simply:
+Route::middleware('microservice.auth')->group(function () {
+    // protected routes…
+});
+```
+
+---
+
+### Permission Middleware
+
+**Alias**: the string you assign to `permission` in `middleware_aliases`, e.g. `permission`.  
+**Class**: `Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware`
+
+#### Description
+
+Restricts access to routes based on user permissions.  
+Checks if the authenticated user has the required permission(s) before allowing access.  
+Returns a 403 Forbidden response if the user lacks the necessary permission.
+
+#### Usage
+
+```php
+// In routes/api.php
+Route::middleware(['permission:orders.view'])->get('/orders', [OrderController::class, 'index']);
+Route::middleware(['permission:orders.create'])->post('/orders', [OrderController::class, 'store']);
+```
+
+---
+
+### Role Middleware
+
+**Alias**: the string you assign to `role` in `middleware_aliases`, e.g. `role`.  
+**Class**: `Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware`
+
+#### Description
+
+Restricts access to routes based on user roles.  
+Checks if the authenticated user has the required role(s) before allowing access.  
+Returns a 403 Forbidden response if the user does not have the required role.
+
+#### Usage
+
+```php
+// In routes/api.php
+Route::middleware(['role:admin'])->get('/admin', [AdminController::class, 'dashboard']);
+Route::middleware(['role:manager'])->post('/reports', [ReportController::class, 'generate']);
+```
+
+---
+
 ### Correlation ID
 
 **Alias**: the string you assign to `correlation_id` in `middleware_aliases`, e.g. `correlation.id`.
@@ -120,6 +191,29 @@ Route::middleware(['correlation.id'])->group(function () {
 ```
 X-Correlation-ID: 123e4567-e89b-12d3-a456-426614174000
 ```
+
+---
+
+### Auth Middleware Group
+
+For convenience, you can use the built-in `microservice.auth` group, which runs:
+
+1. **ValidateJwt** – decode JWT, hydrate `ExternalUser`, set `Auth::user()`  
+2. **LoadAccess** – fetch roles & permissions via ApiGateway
+
+#### Usage
+
+```php
+// routes/api.php
+
+Route::middleware('microservice.auth')->group(function () {
+    // Here you already have a valid ExternalUser with roles & permissions loaded:
+    Route::get('/orders',   [OrderController::class, 'index']);
+    Route::post('/orders',  [OrderController::class, 'store']);
+});
+```
+
+You no longer need to stack `jwt.auth` + `load.access` manually—just use `microservice.auth` wherever you need full auth + authorization.
 
 ---
 

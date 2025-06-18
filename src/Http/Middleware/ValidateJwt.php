@@ -37,24 +37,13 @@ class ValidateJwt
 
             // Auth from JWT
             $user = new ExternalUser((array) $decoded);
-
-            // Get Permissions, permits tolerance
-            try {
-                $access = app(PermissionsClient::class)->getAccessFor($user);
-            } catch (\Throwable $e) {
-                $access = [
-                    'roles' => [],
-                    'permissions' => [],
-                ];
-            }
-
             $user->loadAccess(
-                $access['roles'] ?? [],
-                $access['permissions'] ?? []
+                $user->attributes['roles'] ?? [],
+                $user->attributes['permissions'] ?? []
             );
-
             Auth::setUser($user);
             $request->setUserResolver(fn () => $user);
+
         } catch (\Throwable $e) {
             return response()->json(['error' => 'Invalid token', 'message' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
         }

@@ -7,6 +7,9 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClientFactory;
@@ -55,6 +58,27 @@ class MicroserviceServiceProvider extends ServiceProvider
             $router->aliasMiddleware($corrAlias, CorrelationId::class);
             $router->prependMiddlewareToGroup('api', CorrelationId::class);
         }
+
+        // Role middleware alias
+        if (! empty($aliases['role'] ?? '')) {
+            $router->aliasMiddleware($aliases['role'], RoleMiddleware::class);
+        }
+
+        // Permission middleware alias
+        if (! empty($aliases['permission'] ?? '')) {
+            $router->aliasMiddleware($aliases['permission'], PermissionMiddleware::class);
+        }
+
+        // LoadAccess middleware alias
+        if (! empty($aliases['load_access'] ?? '')) {
+            $router->aliasMiddleware($aliases['load.access'], PermissionMiddleware::class);
+        }
+
+        // Auth middleware group
+        $router->middlewareGroup('microservice.auth', [
+            ValidateJwt::class,
+            LoadAccess::class,
+        ]);
 
         // HTTP
         Http::macro('apiGateway', function () {
