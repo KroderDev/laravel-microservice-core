@@ -18,8 +18,9 @@ class PermissionsClient
     public function getAccessFor(ExternalUser $user): array
     {
         $cacheKey = "user_access:{$user->getAuthIdentifier()}";
+        $ttl = config('microservice.permissions_cache_ttl', 60);
 
-        return Cache::remember($cacheKey, 60, function () use ($user) {
+        return Cache::remember($cacheKey, $ttl, function () use ($user) {
             $response = $this->gateway->get('/auth/permissions/' . $user->getAuthIdentifier());
 
             if ($response->failed()) {

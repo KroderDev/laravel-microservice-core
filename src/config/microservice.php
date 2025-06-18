@@ -18,8 +18,6 @@ return [
         'role'           => 'role',
         'permission'     => 'permission',
     ],
-
-
     
     /*
     |--------------------------------------------------------------------------
@@ -118,4 +116,15 @@ return [
          */
         'url' => env('API_GATEWAY_URL', 'http://gateway.local'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Permissions Cache
+    |--------------------------------------------------------------------------
+    |
+    | Defines how long (in seconds) fetched roles and permissions are cached
+    | for an authenticated user. Adjust via the PERMISSIONS_CACHE_TTL
+    | environment variable to control cache duration.
+    */
+    'permissions_cache_ttl' => env('PERMISSIONS_CACHE_TTL', 60),
 ];

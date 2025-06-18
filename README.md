@@ -125,6 +125,12 @@ Loads the authenticated user's roles and permissions, typically from a centraliz
 By default, the `ValidateJwt` middleware will automatically load `roles` and `permissions` from the JWT payload if they are present.  
 However, if you have a centralized permission service, you can use `LoadAccess` to fetch and hydrate the latest roles and permissions for the user, ensuring up-to-date authorization data.
 
+#### Configuration (`config/microservice.php`)
+
+```php
+'permissions_cache_ttl' => env('PERMISSIONS_CACHE_TTL', 60),
+```
+
 #### Usage
 
 Apply after JWT authentication, or use the `microservice.auth` group for both:
