@@ -2,7 +2,7 @@
 
 [![Packagist Version](https://img.shields.io/packagist/v/kroderdev/laravel-microservice-core.svg)](https://packagist.org/packages/kroderdev/laravel-microservice-core) [![Downloads](https://img.shields.io/packagist/dt/kroderdev/laravel-microservice-core.svg)](https://packagist.org/packages/kroderdev/laravel-microservice-core) [![License](https://img.shields.io/packagist/l/kroderdev/laravel-microservice-core.svg)](LICENSE)
 
-A toolkit to leverage **Laravel 12** as a performant and configurable microservice framework within distributed architectures.  
+A toolkit that turns **Laravel 12** into a lightweight base for distributed microservices. 
 
 ## Overview
 
@@ -280,8 +280,36 @@ When enabled (default), visiting `/api/health` returns:
 
 ---
 
-## Public Release and Future Goals
+## Public Release and Roadmap
 
-This repository is brand new, and I’m excited to develop it further! My plan is to continuously strengthen the core, add more middleware modules, expand test coverage, and refine configuration options.  
+This toolkit is still maturing. Upcoming plans include:
 
-Your feedback, issues or pull requests are very welcome—together we can shape this toolkit into a reliable, production-ready solution for Laravel microservices. I hope you find it helpful and look forward to your contributions!
+- Strengthening middleware modules
+- Increasing test coverage
+- Publishing more integration examples
+
+A stable **v1.0** is on the horizon. Please share feedback or ideas in the issue tracker!
+
+---
+
+## Extending the Core
+
+This package keeps its dependencies minimal so you can tailor each microservice as needed. Consider these optional packages when expanding your stack:
+
+- **RabbitMQ Messaging** – Integrate [iamfarhad/LaravelRabbitMQ](https://github.com/iamfarhad/LaravelRabbitMQ) if you rely on RabbitMQ for queues. Install the package via Composer and update your queue connection to `rabbitmq`.
+- **Prometheus Metrics** – Expose service metrics with [spatie/laravel-prometheus](https://github.com/spatie/laravel-prometheus). Publish the configuration and register the `/metrics` route in your service.
+- **Additional Tools** – Depending on your requirements, you might add packages for service discovery, distributed tracing, or improved concurrency (e.g., Laravel Octane or Horizon).
+
+These extensions remain completely optional, allowing you to keep the core lightweight while adding features specific to your environment.
+
+---
+
+## Contributing
+
+Community contributions are encouraged! To get started:
+
+1. Fork the repository and create a feature branch.
+2. Commit your changes with tests when possible.
+3. Open a pull request describing your work.
+
+Feel free to start a discussion or issue if you have questions about the roadmap or want to propose a feature.
