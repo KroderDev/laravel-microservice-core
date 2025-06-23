@@ -1,0 +1,174 @@
+<?php
+
+namespace Tests\Models;
+
+use Orchestra\Testbench\TestCase;
+require_once __DIR__.'/../Services/FakeGatewayClient.php';
+use Tests\Services\FakeGatewayClient;
+use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Models\Model as ApiModel;
+
+class RemoteUser extends ApiModel
+{
+    protected static string $endpoint = '/users';
+    protected $fillable = ['id', 'name'];
+}
+
+class ApiModelTest extends TestCase
+{
+    protected FakeGatewayClient $gateway;
+
+    protected function getPackageProviders($app)
+    {
+        return [\Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider::class];
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->gateway = new FakeGatewayClient();
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+    }
+
+    /** @test */
+    public function all_users_gateway()
+    {
+        // Simulate the gateway returning an array of users
+        $this->gateway = new class extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+                // Simulate API returning an array of users
+                return ['data' => [
+                    ['id' => 1, 'name' => 'Alice'],
+                    ['id' => 2, 'name' => 'Bob'],
+                ]];
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $users = RemoteUser::all();
+        $this->assertSame([['method' => 'GET', 'uri' => '/users', 'query' => []]], $this->gateway->getCalls());
+        $this->assertCount(2, $users);
+        $this->assertEquals('Alice', $users[0]->name);
+        $this->assertEquals('Bob', $users[1]->name);
+    }
+
+    /** @test */
+    public function find_users_gateway()
+    {
+        $this->gateway = new class extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+                if ($uri === '/users/5') {
+                    return ['data' => ['id' => 5, 'name' => 'Eve']];
+                }
+                return null;
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $user = RemoteUser::find(5);
+        $this->assertSame([['method' => 'GET', 'uri' => '/users/5', 'query' => []]], $this->gateway->getCalls());
+        $this->assertInstanceOf(RemoteUser::class, $user);
+        $this->assertEquals(5, $user->id);
+        $this->assertEquals('Eve', $user->name);
+    }
+
+    /** @test */
+    public function find_users_gateway_returns_null_when_not_found()
+    {
+        $this->gateway = new class extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+                return null; // Simulate not found
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $user = RemoteUser::find(999);
+        $this->assertSame([['method' => 'GET', 'uri' => '/users/999', 'query' => []]], $this->gateway->getCalls());
+        $this->assertNull($user);
+    }
+
+    /** @test */
+    public function create_users_gateway()
+    {
+        $this->gateway = new class extends FakeGatewayClient {
+            public function post(string $uri, array $data = [])
+            {
+                parent::post($uri, $data);
+                // Ensure a valid array is always returned to avoid TypeError in create()
+                return ['data' => ['id' => 10, 'name' => $data['name']]];
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $user = RemoteUser::create(['name' => 'John']);
+        $this->assertSame([['method' => 'POST', 'uri' => '/users', 'data' => ['name' => 'John']]], $this->gateway->getCalls());
+        $this->assertInstanceOf(RemoteUser::class, $user);
+        $this->assertEquals('John', $user->name);
+        $this->assertEquals(10, $user->id);
+    }
+
+    /** @test */
+    public function all_users_gateway_handles_empty_response()
+    {
+        $this->gateway = new class extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+                return [];
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $users = RemoteUser::all();
+        $this->assertSame([['method' => 'GET', 'uri' => '/users', 'query' => []]], $this->gateway->getCalls());
+        $this->assertIsIterable($users);
+        $this->assertCount(0, $users);
+    }
+
+    /** @test */
+    public function all_users_gateway_handles_api_failure()
+    {
+        $this->gateway = new class extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+                return false; // Simulate API failure
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $this->expectException(\TypeError::class);
+        RemoteUser::all();
+    }
+
+    /** @test */
+    public function update_users_gateway()
+    {
+        $user = new RemoteUser(['id' => 9, 'name' => 'Old']);
+        $user->exists = true;
+        $user->name = 'New';
+        $user->save();
+
+        $this->assertSame([
+            ['method' => 'PUT', 'uri' => '/users/9', 'data' => ['id' => 9, 'name' => 'New']],
+        ], $this->gateway->getCalls());
+    }
+
+    /** @test */
+    public function delete_users_gateway()
+    {
+        $user = new RemoteUser(['id' => 4]);
+        $user->exists = true;
+        $user->delete();
+
+        $this->assertSame([
+            ['method' => 'DELETE', 'uri' => '/users/4'],
+        ], $this->gateway->getCalls());
+    }
+}

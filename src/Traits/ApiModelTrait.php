@@ -7,13 +7,36 @@ use Illuminate\Support\Collection;
 
 trait ApiModelTrait
 {
-    public static function fromApiResponse(array $data)
+    /**
+     * Instantiate a model from raw API data.
+     */
+    public static function fromApiResponse(array $data): static
     {
         $instance = new static();
         $instance->fill($data);
+
         return $instance;
     }
 
+    /**
+     * Create a collection of models from an array of payloads.
+     */
+    public static function fromCollection(array $items): Collection
+    {
+        return collect($items)->map(fn ($item) => static::fromApiResponse($item));
+    }
+
+    /**
+     * Build a model from a typical API response wrapper.
+     */
+    public static function fromResponse(array $response): ?static
+    {
+        return isset($response['data']) ? static::fromApiResponse($response['data']) : null;
+    }
+
+    /**
+     * Convert a paginated API payload into a paginator of models.
+     */
     public static function fromPaginatedResponse(array $response): LengthAwarePaginator
     {
         $items = collect($response['data'] ?? [])
@@ -29,16 +52,5 @@ trait ApiModelTrait
             ['path' => request()->url(), 'query' => request()->query()]
         );
     }
-
-    public static function fromCollection(array $items): Collection
-    {
-        return collect($items)->map(fn($item) => static::fromApiResponse($item));
-    }
-
-    public static function fromResponse(array $response): ?self
-    {
-        return isset($response['data']) ? static::fromApiResponse($response['data']) : null;
-    }
-
 
 }
