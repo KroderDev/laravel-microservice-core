@@ -39,10 +39,10 @@ class ValidateJwt
             $decoded = JWT::decode($token, new Key($publicKey, config('microservice.auth.jwt_algorithm')));
 
             // Auth from JWT
-            $user = new ExternalUser((array) $decoded);
+            $user = new ExternalUser(['sub' => $decoded->sub]);
             $user->loadAccess(
-                $user->attributes['roles'] ?? [],
-                $user->attributes['permissions'] ?? []
+                $decoded->roles ?? [],
+                $decoded->permissions ?? []
             );
             Auth::setUser($user);
             $request->setUserResolver(fn () => $user);
