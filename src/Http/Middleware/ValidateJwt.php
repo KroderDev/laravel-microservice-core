@@ -48,7 +48,10 @@ class ValidateJwt
             $request->setUserResolver(fn () => $user);
 
         } catch (\Throwable $e) {
-            return response()->json(['error' => 'Invalid token', 'message' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Invalid token', 'message' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
+            }
+            return response('Unauthorized', Response::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);
