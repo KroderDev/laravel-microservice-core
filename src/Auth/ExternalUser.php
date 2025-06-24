@@ -4,14 +4,14 @@ namespace Kroderdev\LaravelMicroserviceCore\Auth;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
+use Kroderdev\LaravelMicroserviceCore\Traits\HasAccess;
 
-class ExternalUser extends Authenticatable
+class ExternalUser extends Authenticatable implements AccessUserInterface
 {
-    use Notifiable;
+    use Notifiable, HasAccess;
     
     protected $attributes = [];
-    protected array $roles = [];
-    protected array $permissions = [];
 
     public function __construct(array $attributes = [])
     {
@@ -25,30 +25,4 @@ class ExternalUser extends Authenticatable
     public function getAuthPassword() { return null; }
     public function __get($key){ return $this->attributes[$key] ?? null; }
 
-    // Permissions
-    public function loadAccess(array $roles, array $permissions): void
-    {
-        $this->roles = $roles;
-        $this->permissions = $permissions;
-    }
-
-    public function hasRole(string $role): bool
-    {
-        return in_array($role, $this->roles);
-    }
-
-    public function hasPermissionTo(string $permission): bool
-    {
-        return in_array($permission, $this->permissions);
-    }
-
-    public function getRoleNames(): array
-    {
-        return $this->roles;
-    }
-
-    public function getPermissions(): array
-    {
-        return $this->permissions;
-    }
 }

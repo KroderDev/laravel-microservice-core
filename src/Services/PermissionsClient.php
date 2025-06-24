@@ -3,7 +3,7 @@
 namespace Kroderdev\LaravelMicroserviceCore\Services;
 
 use Illuminate\Support\Facades\Cache;
-use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
+use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 
 class PermissionsClient
@@ -15,7 +15,7 @@ class PermissionsClient
         $this->gateway = $gateway;
     }
 
-    public function getAccessFor(ExternalUser $user): array
+    public function getAccessFor(AccessUserInterface $user): array
     {
         $cacheKey = "user_access:{$user->getAuthIdentifier()}";
         $ttl = config('microservice.permissions_cache_ttl', 60);

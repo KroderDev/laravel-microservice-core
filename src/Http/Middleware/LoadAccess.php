@@ -3,11 +3,9 @@
 namespace Kroderdev\LaravelMicroserviceCore\Http\Middleware;
 
 use Closure;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
+use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,15 +32,16 @@ class LoadAccess
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        try {
-            $access = app(PermissionsClient::class)->getAccessFor($user);
-            $user->loadAccess(
-                $access['roles'] ?? [],
-                $access['permissions'] ?? []
-            );
-        } catch (\Throwable $e) {
-            // Do nothing
-            // $user->loadAccess([], []);
+        if ($user instanceof AccessUserInterface) {
+            try {
+                $access = app(PermissionsClient::class)->getAccessFor($user);
+                $user->loadAccess(
+                    $access['roles'] ?? [],
+                    $access['permissions'] ?? []
+                );
+            } catch (\Throwable $e) {
+                // Do nothing
+            }
         }
 
         return $next($request);
