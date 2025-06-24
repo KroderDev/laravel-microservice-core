@@ -15,7 +15,7 @@ class HttpMacrosTest extends TestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('services.api_gateway.url', 'http://gateway.test');
+        $app['config']->set('microservice.api_gateway.url', 'http://gateway.test');
         $app['config']->set('microservice.correlation.header', 'X-Correlation-ID');
     }
 

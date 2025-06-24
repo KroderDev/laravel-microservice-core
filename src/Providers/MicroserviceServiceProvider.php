@@ -93,7 +93,7 @@ class MicroserviceServiceProvider extends ServiceProvider
 
             return Http::acceptJson()
                 ->withHeaders($correlation ? [$header => $correlation] : [])
-                ->baseUrl(config('services.api_gateway.url'))
+                ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5)
                 ->retry(2, 100);
         });
@@ -105,7 +105,7 @@ class MicroserviceServiceProvider extends ServiceProvider
 
             return Http::acceptJson()
                 ->withHeaders($correlation ? [$header => $correlation] : [])
-                ->baseUrl(config('services.api_gateway.url'))
+                ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5);
         });
 
@@ -117,7 +117,7 @@ class MicroserviceServiceProvider extends ServiceProvider
             return Http::acceptJson()
                 ->withToken($token)
                 ->withHeaders($correlation ? [$header => $correlation] : [])
-                ->baseUrl(config('services.api_gateway.url'))
+                ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5)
                 ->retry(2, 100);
         });
@@ -130,7 +130,7 @@ class MicroserviceServiceProvider extends ServiceProvider
             return Http::acceptJson()
                 ->withToken($token)
                 ->withHeaders($correlation ? [$header => $correlation] : [])
-                ->baseUrl(config('services.api_gateway.url'))
+                ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5);
         });
     }
