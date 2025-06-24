@@ -22,11 +22,14 @@ class RoleMiddleware
     {
         $user = Auth::user();
         if (! $user || ! $user->hasRole($role)) {
-            return response()->json([
-                'error'   => 'forbidden',
-                'message' => "User does not have required role: {$role}",
-                'status'  => Response::HTTP_FORBIDDEN,
-            ], Response::HTTP_FORBIDDEN);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error'   => 'forbidden',
+                    'message' => "User does not have required role: {$role}",
+                    'status'  => Response::HTTP_FORBIDDEN,
+                ], Response::HTTP_FORBIDDEN);
+            }
+            abort(Response::HTTP_FORBIDDEN, "User does not have required role: {$role}");
         }
         return $next($request);
     }

@@ -22,11 +22,14 @@ class PermissionMiddleware
     {
         $user = Auth::user();
         if (! $user || ! $user->hasPermissionTo($permission)) {
-            return response()->json([
-                'error'   => 'forbidden',
-                'message' => "User does not have required permission: {$permission}",
-                'status'  => Response::HTTP_FORBIDDEN,
-            ], Response::HTTP_FORBIDDEN);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error'   => 'forbidden',
+                    'message' => "User does not have required permission: {$permission}",
+                    'status'  => Response::HTTP_FORBIDDEN,
+                ], Response::HTTP_FORBIDDEN);
+            }
+            abort(Response::HTTP_FORBIDDEN, "User does not have required permission: {$permission}");
         }
         return $next($request);
     }
