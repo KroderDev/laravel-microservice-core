@@ -37,6 +37,7 @@ class PermissionsClientTest extends TestCase
         };
         $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
         Cache::flush();
+        $this->app['config']->set('microservice.permissions_endpoint', '/permissions');
     }
 
     protected function getPackageProviders($app)

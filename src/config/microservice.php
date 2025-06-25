@@ -140,4 +140,5 @@ return [
     | environment variable to control cache duration.
     */
     'permissions_cache_ttl' => env('PERMISSIONS_CACHE_TTL', 60),
+    'permissions_endpoint'  => env('PERMISSIONS_ENDPOINT', '/auth/permissions')
 ];
