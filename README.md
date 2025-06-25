@@ -251,6 +251,26 @@ You no longer need to stack `jwt.auth` + `load.access` manually—just use `micr
 
 ---
 
+### Authorization
+
+This package hooks into Laravel's Gate so Blade directives work with your roles and permissions. Any ability is treated as a permission by default; prefix an ability with `role:` or `permission:` to be explicit.
+
+```blade
+@can('posts.create')
+    <!-- user can create posts -->
+@endcan
+
+@cannot('permission:posts.delete')
+    <!-- no delete rights -->
+@endcannot
+
+@canany(['role:admin', 'permission:posts.update'])
+    <!-- admin or user with update permission -->
+@endcanany
+```
+
+---
+
 ## Endpoints
 
 ### Health Check Endpoint

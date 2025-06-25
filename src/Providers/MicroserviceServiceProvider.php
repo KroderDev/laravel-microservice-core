@@ -4,8 +4,10 @@ namespace Kroderdev\LaravelMicroserviceCore\Providers;
 
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
+use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Http\HealthCheckController;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
@@ -46,6 +48,24 @@ class MicroserviceServiceProvider extends ServiceProvider
         ], 'config');
 
         $aliases = config('microservice.middleware_aliases', []);
+
+        // Authorization gates
+        Gate::before(function ($user, string $ability) {
+            if (! $user instanceof AccessUserInterface) {
+                return null;
+            }
+
+            if (str_starts_with($ability, 'role:')) {
+                $role = substr($ability, 5);
+                return $user->hasRole($role);
+            }
+
+            if (str_starts_with($ability, 'permission:')) {
+                $ability = substr($ability, 11);
+            }
+
+            return $user->hasPermissionTo($ability);
+        });
 
         // JWT Middleware alias
         if (!empty($aliases['jwt_auth'])) {
