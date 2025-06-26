@@ -156,8 +156,12 @@ class MicroserviceServiceProvider extends ServiceProvider
         });
 
         // Exceptions
-        $this->app->make(ExceptionHandler::class)->renderable(function (ApiGatewayException $e, $request) {
-            return response()->json($e->getData(), $e->getStatusCode());
-        });
+        $handler = $this->app->make(ExceptionHandler::class);
+
+        if (method_exists($handler, 'renderable')) {
+            $handler->renderable(function (ApiGatewayException $e, $request) {
+                return response()->json($e->getData(), $e->getStatusCode());
+            });
+        }
     }
 }
