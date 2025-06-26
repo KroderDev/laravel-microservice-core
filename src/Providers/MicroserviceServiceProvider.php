@@ -2,13 +2,14 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Providers;
 
-use Illuminate\Foundation\Http\Kernel;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException;
 use Kroderdev\LaravelMicroserviceCore\Http\HealthCheckController;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
@@ -115,7 +116,7 @@ class MicroserviceServiceProvider extends ServiceProvider
                 ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5)
-                ->retry(2, 100);
+                ->retry(2, 100, throw: false);
         });
 
         Http::macro('apiGatewayDirect', function () {
@@ -139,7 +140,7 @@ class MicroserviceServiceProvider extends ServiceProvider
                 ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5)
-                ->retry(2, 100);
+                ->retry(2, 100, throw: false);
         });
 
         Http::macro('apiGatewayDirectWithToken', function (string $token) {
@@ -152,6 +153,11 @@ class MicroserviceServiceProvider extends ServiceProvider
                 ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5);
+        });
+
+        // Exceptions
+        $this->app->make(ExceptionHandler::class)->renderable(function (ApiGatewayException $e, $request) {
+            return response()->json($e->getData(), $e->getStatusCode());
         });
     }
 }

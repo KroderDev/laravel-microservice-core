@@ -24,7 +24,7 @@ This package provides a robust foundation for building Laravel-based microservic
   Easily enable, disable, or rename middleware via configuration, and use convenient groups like `microservice.auth` group for full authentication and authorization in one step.
 
 - **HTTP Client Macros:**
-  Pre-configured HTTP clients for communicating with your API Gateway or other services. When a request is available, these macros automatically forward the current correlation ID header.
+  Pre-configured HTTP clients for communicating with your API Gateway or other services. They automatically forward the current correlation ID header and propagate gateway errors to the caller.
 
 - **Ready-to-publish Configuration:**  
   All settings are customizable via a single config file, making it easy to adapt the package to your environment.
@@ -111,8 +111,6 @@ Route::middleware(['jwt.auth'])->group(function () {
   "message": "Invalid or expired token"
 }
 ```
-
----
 
 ### LoadAccess
 
@@ -297,6 +295,12 @@ When enabled (default), visiting `/api/health` returns:
   "timestamp": "2025-01-01T12:00:00Z"
 }
 ```
+
+### HTTP Client Macros
+
+Use `Http::apiGateway()` and its related macros for service-to-service calls. Each macro forwards the current correlation ID header when available.
+
+If the gateway responds with an error (for example, a `503`), an `ApiGatewayException` is thrown and automatically returned to the client with the same status code.
 
 ---
 

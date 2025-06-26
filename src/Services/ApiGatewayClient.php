@@ -5,6 +5,7 @@ namespace Kroderdev\LaravelMicroserviceCore\Services;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException;
 
 class ApiGatewayClient implements ApiGatewayClientInterface
 {
@@ -37,21 +38,43 @@ class ApiGatewayClient implements ApiGatewayClientInterface
 
     public function get(string $uri, array $query = [])
     {
-        return $this->http->get($uri, $query);
+        return $this->handleResponse(
+            $this->http->get($uri, $query)
+        );
     }
 
     public function post(string $uri, array $data = [])
     {
-        return $this->http->post($uri, $data);
+        return $this->handleResponse(
+            $this->http->delete($uri)
+        );
     }
 
     public function put(string $uri, array $data = [])
     {
-        return $this->http->put($uri, $data);
+        return $this->handleResponse(
+            $this->http->delete($uri)
+        );
     }
 
     public function delete(string $uri)
     {
-        return $this->http->delete($uri);
+        return $this->handleResponse(
+            $this->http->delete($uri)
+        );
+    }
+
+    protected function handleResponse($response)
+    {
+        if (is_object($response) && method_exists($response, 'failed') && $response->failed()) {
+            $data = method_exists($response, 'json') ? $response->json() : [];
+
+            throw new ApiGatewayException(
+                method_exists($response, 'status') ? $response->status() : 500,
+                is_array($data) ? $data : []
+            );
+        }
+
+        return $response;
     }
 }
