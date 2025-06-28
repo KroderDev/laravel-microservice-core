@@ -23,6 +23,4 @@ class ExternalUser extends Authenticatable implements AccessUserInterface
     public function getAuthIdentifierName() { return 'id'; }
     public function getAuthIdentifier() { return $this->attributes[$this->getAuthIdentifierName()] ?? null; }
     public function getAuthPassword() { return null; }
-    public function __get($key){ return $this->attributes[$key] ?? null; }
-
 }
