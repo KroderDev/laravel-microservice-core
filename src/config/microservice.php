@@ -140,5 +140,18 @@ return [
     | environment variable to control cache duration.
     */
     'permissions_cache_ttl' => env('PERMISSIONS_CACHE_TTL', 60),
-    'permissions_endpoint'  => env('PERMISSIONS_ENDPOINT', '/auth/permissions')
+    'permissions_endpoint'  => env('PERMISSIONS_ENDPOINT', '/auth/permissions'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Gateway Guard Options
+    |--------------------------------------------------------------------------
+    |
+    | Configure the session-based gateway guard for front-end applications.
+    */
+    'gateway_guard' => [
+        'user_model'  => \Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser::class,
+        'load_access' => true,
+        'me_cache_ttl' => env('GATEWAY_ME_CACHE_TTL', 300),
+    ],
 ];

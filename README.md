@@ -14,8 +14,11 @@ This package provides a robust foundation for building Laravel-based microservic
 - **Role & Permission Middleware:**  
   Restrict access to routes based on user roles or permissions, with support for both JWT-embedded and dynamically loaded access control.
 
-- **LoadAccess Middleware:**  
+- **LoadAccess Middleware:**
   Optionally fetches the latest roles and permissions for the authenticated user from a centralized permission service or API Gateway.
+
+- **Gateway Guard:**
+  Session-based guard that refreshes JWT tokens via the API Gateway and loads permissions automatically.
 
 - **Correlation ID Middleware:**  
   Automatically generates or propagates a unique correlation ID for every request, enabling end-to-end tracing across distributed systems.
@@ -325,6 +328,12 @@ This package keeps its dependencies minimal so you can tailor each microservice 
 - **Additional Tools** – Depending on your requirements, you might add packages for service discovery, distributed tracing, or improved concurrency (e.g., Laravel Octane or Horizon).
 
 These extensions remain completely optional, allowing you to keep the core lightweight while adding features specific to your environment.
+
+---
+
+## Documentation
+
+Additional guides and examples are available in the [wiki](./wiki/GatewayGuard.md).
 
 ---
 

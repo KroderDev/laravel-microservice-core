@@ -4,9 +4,11 @@ namespace Kroderdev\LaravelMicroserviceCore\Providers;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
+use Kroderdev\LaravelMicroserviceCore\Auth\GatewayGuard;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException;
@@ -17,6 +19,7 @@ use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClientFactory;
+use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\CorrelationId;
 
@@ -36,6 +39,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         $this->app->singleton(ApiGatewayClient::class, fn () => ApiGatewayClient::make());
         $this->app->bind(ApiGatewayClientInterface::class, fn($app) => $app->make(ApiGatewayClientFactory::class)->default()); 
         $this->app->singleton(PermissionsClient::class, fn($app) => new PermissionsClient($app->make(ApiGatewayClientInterface::class)));
+        $this->app->singleton(AuthServiceClient::class, fn () => new AuthServiceClient());
     }
 
     /**
@@ -48,7 +52,18 @@ class MicroserviceServiceProvider extends ServiceProvider
             __DIR__.'/../config/microservice.php' => config_path('microservice.php'),
         ], 'config');
 
-        $aliases = config('microservice.middleware_aliases', []);
+        // Gateway Guard
+        Auth::extend('gateway', function ($app, $name, array $config) {
+            $provider = Auth::createUserProvider($config['provider'] ?? null);
+
+            return new GatewayGuard(
+                $name,
+                $provider,
+                $app['session.store'],
+                $app->make('request'),
+                $app->make(AuthServiceClient::class)
+            );
+        });
 
         // Authorization gates
         Gate::before(function ($user, string $ability) {
@@ -67,6 +82,8 @@ class MicroserviceServiceProvider extends ServiceProvider
 
             return $user->hasPermissionTo($ability);
         });
+
+        $aliases = config('microservice.middleware_aliases', []);
 
         // JWT Middleware alias
         if (!empty($aliases['jwt_auth'])) {
