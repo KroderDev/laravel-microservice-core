@@ -98,4 +98,13 @@ class GatewayGuardTest extends TestCase
         $user = $guard->user();
         $this->assertEmpty($user->getRoleNames());
     }
+
+    /** @test */
+    public function token_method_returns_current_token()
+    {
+        $guard = Auth::guard('gateway');
+        $guard->attempt(['email' => 'foo']);
+
+        $this->assertSame('token123', $guard->token());
+    }
 }

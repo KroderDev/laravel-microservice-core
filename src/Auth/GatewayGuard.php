@@ -105,6 +105,15 @@ class GatewayGuard extends SessionGuard
         //$this->session->migrate(true); Conflicts with CSRF
     }
 
+    public function token(): ?string
+    {
+        if (! $this->token) {
+            $this->token = $this->session->get($this->getName());
+        }
+
+        return $this->token;
+    }
+
     public function attempt(array $credentials = [], $remember = false)
     {
         $response = $this->client->login($credentials);
