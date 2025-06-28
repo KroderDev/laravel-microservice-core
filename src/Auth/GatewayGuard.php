@@ -127,6 +127,26 @@ class GatewayGuard extends SessionGuard
         return true;
     }
 
+    public function loginWithToken(string $token, array $userData = [], $remember = false): void
+    {
+        $this->token = $token;
+        $this->updateSession($token);
+
+        if (empty($userData)) {
+            $userData = $this->client->me($token);
+        }
+
+        $model = $this->userModel;
+        $user = new $model($userData);
+
+        if ($this->loadAccess && $user instanceof AccessUserInterface) {
+            $user->loadAccess($userData['roles'] ?? [], $userData['permissions'] ?? []);
+        }
+
+        $this->setUser($user);
+        $this->fireLoginEvent($user, $remember);
+    }
+
     public function login(AuthenticatableContract $user, $remember = false)
     {
         $this->setUser($user);
