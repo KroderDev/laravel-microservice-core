@@ -333,7 +333,7 @@ These extensions remain completely optional, allowing you to keep the core light
 
 ## Documentation
 
-Additional guides and examples are available in the [wiki]([./wiki/GatewayGuard.md](https://github.com/KroderDev/laravel-microservice-core/wiki)).
+Additional guides and examples are available in the [wiki](https://github.com/KroderDev/laravel-microservice-core/wiki).
 
 ---
 
