@@ -127,6 +127,23 @@ class GatewayAuthControllersTest extends TestCase
     }
 
     /** @test */
+    public function login_controller_redirects_to_intended_url_if_present()
+    {
+        $this->withSession(['url.intended' => '/dashboard'])
+            ->post('/login', ['email' => 'foo', 'password' => 'bar'])
+            ->assertRedirect('/dashboard');
+    }
+
+    /** @test */
+    public function login_controller_redirects_to_configured_default_when_no_json()
+    {
+        Config::set('microservice.gateway_auth.default_redirect', '/default');
+
+        $this->post('/login', ['email' => 'foo', 'password' => 'bar'])
+            ->assertRedirect('/default');
+    }
+
+    /** @test */
     public function register_controller_redirects_if_requested()
     {
         $this->post('/register?redirect=/welcome', ['email' => 'foo', 'password' => 'bar'])

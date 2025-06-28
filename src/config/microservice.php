@@ -154,4 +154,18 @@ return [
         'load_access' => true,
         'me_cache_ttl' => env('GATEWAY_ME_CACHE_TTL', 300),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Gateway Auth Controllers
+    |--------------------------------------------------------------------------
+    |
+    | Configuration specific to the built-in authentication controllers.
+    | The default_redirect value determines where the user is sent if no
+    | redirect parameter or intended URL exists and the request does not
+    | expect JSON.
+    */
+    'gateway_auth' => [
+        'default_redirect' => env('GATEWAY_AUTH_DEFAULT_REDIRECT', '/'),
+    ],
 ];
