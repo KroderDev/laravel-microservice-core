@@ -3,14 +3,24 @@
 namespace Kroderdev\LaravelMicroserviceCore\Traits;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
 
 trait RedirectsIfRequested
 {
-    protected function redirectIfRequested(Request $request, $response): RedirectResponse|Response
+    protected function redirectIfRequested(Request $request, $response)
     {
-        $redirectTo = $request->input('redirect');
-        return $redirectTo ? redirect()->to($redirectTo) : $response;
+        if ($request->has('redirect')) {
+            $redirectTo = $request->input('redirect');
+
+            return $redirectTo === 'intended'
+                ? redirect()->intended()
+                : redirect()->to($redirectTo);
+        }
+
+        if (Session::has('url.intended')) {
+            return redirect()->intended();
+        }
+
+        return $response;
     }
 }
