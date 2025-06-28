@@ -6,10 +6,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
-use Illuminate\Http\JsonResponse;
+use Kroderdev\LaravelMicroserviceCore\Traits\RedirectsIfRequested;
 
 class SocialiteController
 {
+    use RedirectsIfRequested;
     protected AuthServiceClient $client;
 
     public function __construct(AuthServiceClient $client)
@@ -34,9 +35,11 @@ class SocialiteController
 
         if (isset($data['access_token'])) {
             Auth::guard('gateway')->loginWithToken($data['access_token'], $data['user'] ?? []);
-            return redirect()->to('/');
+            $response = redirect()->to('/');
+        } else {
+            $response = response()->json($data, 400);
         }
 
-        return response()->json($data, 400);
+        return $this->redirectIfRequested($request, $response);
     }
 }

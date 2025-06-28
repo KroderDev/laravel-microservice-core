@@ -2,13 +2,15 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Http\Auth;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Kroderdev\LaravelMicroserviceCore\Traits\RedirectsIfRequested;
 
 class LoginController
 {
-    public function __invoke(Request $request): JsonResponse
+    use RedirectsIfRequested;
+
+    public function __invoke(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
@@ -16,8 +18,10 @@ class LoginController
             return response()->json(['message' => 'Invalid credentials'], 422);
         }
 
-        return response()->json([
+        $response = response()->json([
             'user' => Auth::guard('gateway')->user(),
         ]);
+
+        return $this->redirectIfRequested($request, $response);
     }
 }

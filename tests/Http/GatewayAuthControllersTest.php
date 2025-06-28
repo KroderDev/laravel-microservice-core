@@ -118,4 +118,32 @@ class GatewayAuthControllersTest extends TestCase
         $this->get('/socialite/github/callback?code=a&state=b')->assertRedirect('/');
         $this->assertEquals('token_socialite', Session::get(Auth::guard('gateway')->getName()));
     }
+
+    /** @test */
+    public function login_controller_redirects_if_requested()
+    {
+        $this->post('/login?redirect=/home', ['email' => 'foo', 'password' => 'bar'])
+            ->assertRedirect('/home');
+    }
+
+    /** @test */
+    public function register_controller_redirects_if_requested()
+    {
+        $this->post('/register?redirect=/welcome', ['email' => 'foo', 'password' => 'bar'])
+            ->assertRedirect('/welcome');
+    }
+
+    /** @test */
+    public function logout_controller_redirects_if_requested()
+    {
+        Session::put(Auth::guard('gateway')->getName(), 'tok');
+        $this->post('/logout?redirect=/bye')->assertRedirect('/bye');
+    }
+
+    /** @test */
+    public function socialite_callback_honors_redirect_parameter()
+    {
+        $this->get('/socialite/github/callback?code=a&state=b&redirect=/foo')
+            ->assertRedirect('/foo');
+    }
 }

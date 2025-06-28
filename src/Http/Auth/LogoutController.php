@@ -2,15 +2,20 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Http\Auth;
 
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Kroderdev\LaravelMicroserviceCore\Traits\RedirectsIfRequested;
 
 class LogoutController
 {
-    public function __invoke(): JsonResponse
+    use RedirectsIfRequested;
+
+    public function __invoke(Request $request)
     {
         Auth::guard('gateway')->logout();
 
-        return response()->json(['message' => 'logged out']);
+        $response = response()->json(['message' => 'logged out']);
+
+        return $this->redirectIfRequested($request, $response);
     }
 }
