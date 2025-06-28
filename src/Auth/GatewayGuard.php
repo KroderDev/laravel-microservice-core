@@ -102,7 +102,7 @@ class GatewayGuard extends SessionGuard
     protected function updateSession($token)
     {
         $this->session->put($this->getName(), $token);
-        $this->session->migrate(true);
+        //$this->session->migrate(true); Conflicts with CSRF
     }
 
     public function attempt(array $credentials = [], $remember = false)
