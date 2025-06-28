@@ -46,14 +46,14 @@ class ApiGatewayClient implements ApiGatewayClientInterface
     public function post(string $uri, array $data = [])
     {
         return $this->handleResponse(
-            $this->http->delete($uri)
+            $this->http->post($uri, $data)
         );
     }
 
     public function put(string $uri, array $data = [])
     {
         return $this->handleResponse(
-            $this->http->delete($uri)
+            $this->http->put($uri, $data)
         );
     }
 
