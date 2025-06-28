@@ -36,7 +36,7 @@ class GatewayGuard extends SessionGuard
         $this->loadAccess = (bool) config('microservice.gateway_guard.load_access', true);
     }
 
-    public function user(): Authenticatable|null
+    public function user()
     {
         if ($this->loggedOut) {
             return null;
