@@ -64,6 +64,6 @@ class PermissionsClientTest extends TestCase
 
         $this->assertEquals(['admin'], $access['roles']);
         $this->assertEquals(['edit.posts'], $access['permissions']);
-        $this->assertSame('/auth/permissions/5', $this->gateway->getCalls()[0]['uri']);
+        $this->assertSame('/permissions/5', $this->gateway->getCalls()[0]['uri']);
     }
 }
