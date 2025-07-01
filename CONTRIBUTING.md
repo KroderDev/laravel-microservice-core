@@ -27,4 +27,4 @@ If you encounter a bug or have an idea for an improvement, please open an issue.
 
 ## Questions?
 
-Check the project wiki for additional documentation or open a discussion if you need further assistance.
+Check the project [wiki](https://github.com/KroderDev/laravel-microservice-core/wiki) for additional documentation or open a discussion if you need further assistance.
