@@ -31,5 +31,9 @@
             ]
         }
     },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "print": "vendor/bin/pint --preset psr12"
+    },
     "minimum-stability": "stable"
 }
