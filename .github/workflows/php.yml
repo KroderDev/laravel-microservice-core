@@ -39,4 +39,4 @@ jobs:
       run: composer run-script test
 
     - name: Run print
-      run: composer run-script print
+      run: composer run-script print-test

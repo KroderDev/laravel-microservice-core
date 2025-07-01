@@ -33,6 +33,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
+        "print-test": "vendor/bin/pint --preset psr12 --test",
         "print": "vendor/bin/pint --preset psr12"
     },
     "minimum-stability": "stable"
