@@ -5,6 +5,7 @@ namespace Kroderdev\LaravelMicroserviceCore\Traits;
 trait HasAccess
 {
     protected array $roles = [];
+
     protected array $permissions = [];
 
     /**

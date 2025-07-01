@@ -9,6 +9,7 @@ use Orchestra\Testbench\TestCase;
 class DefaultUser extends User
 {
     use HasAccess;
+
     protected $fillable = ['id'];
 }
 

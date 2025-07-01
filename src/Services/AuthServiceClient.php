@@ -2,20 +2,22 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class AuthServiceClient
 {
     public function login(array $credentials): array
     {
         $response = Http::apiGatewayDirect()->post('/auth/login', $credentials);
+
         return $response->json() ?: [];
     }
 
     public function register(array $data): array
     {
         $response = Http::apiGatewayDirect()->post('/auth/register', $data);
+
         return $response->json() ?: [];
     }
 
@@ -32,7 +34,7 @@ class AuthServiceClient
             $ttl = min($ttl, max(0, $expires - time()));
         }
 
-        $cacheKey = 'auth_me_' . md5($token);
+        $cacheKey = 'auth_me_'.md5($token);
 
         return Cache::remember($cacheKey, $ttl, function () use ($token) {
             return Http::apiGatewayWithToken($token)->post('/auth/me')->json();
@@ -47,6 +49,7 @@ class AuthServiceClient
                 return null;
             }
             $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+
             return isset($payload['exp']) ? (int) $payload['exp'] : null;
         } catch (\Throwable $e) {
             return null;
@@ -56,6 +59,7 @@ class AuthServiceClient
     public function socialiteRedirect(string $provider): string
     {
         $response = Http::apiGateway()->post("/socialite/{$provider}/redirect")->json();
+
         return $response['url'] ?? '';
     }
 

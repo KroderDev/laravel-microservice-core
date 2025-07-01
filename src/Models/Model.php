@@ -28,7 +28,7 @@ abstract class Model extends BaseModel implements ApiModelContract
             return static::$endpoint;
         }
 
-        return '/' . Str::kebab(Str::pluralStudly(class_basename(static::class)));
+        return '/'.Str::kebab(Str::pluralStudly(class_basename(static::class)));
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class Model extends BaseModel implements ApiModelContract
      */
     public static function find($id, $columns = ['*']): ?self
     {
-        $response = static::client()->get(static::endpoint() . '/' . $id);
+        $response = static::client()->get(static::endpoint().'/'.$id);
         $data = static::parseResponse($response);
 
         return static::fromResponse($data);
@@ -77,7 +77,7 @@ abstract class Model extends BaseModel implements ApiModelContract
     /**
      * Create a model via the API.
      */
-    public static function create(array $attributes = []): self|null
+    public static function create(array $attributes = []): ?self
     {
         $response = static::client()->post(static::endpoint(), $attributes);
         $data = static::parseResponse($response);
@@ -91,7 +91,7 @@ abstract class Model extends BaseModel implements ApiModelContract
     public function save(array $options = []): bool
     {
         if ($this->exists) {
-            $response = static::client()->put(static::endpoint() . '/' . $this->getKey(), $this->attributesToArray());
+            $response = static::client()->put(static::endpoint().'/'.$this->getKey(), $this->attributesToArray());
         } else {
             $response = static::client()->post(static::endpoint(), $this->attributesToArray());
         }
@@ -111,7 +111,7 @@ abstract class Model extends BaseModel implements ApiModelContract
      */
     public function delete(): bool
     {
-        $response = static::client()->delete(static::endpoint() . '/' . $this->getKey());
+        $response = static::client()->delete(static::endpoint().'/'.$this->getKey());
 
         if (is_object($response) && method_exists($response, 'successful')) {
             return $response->successful();
@@ -125,7 +125,7 @@ abstract class Model extends BaseModel implements ApiModelContract
      */
     public function refresh(): static
     {
-        $response = static::client()->get(static::endpoint() . '/' . $this->getKey());
+        $response = static::client()->get(static::endpoint().'/'.$this->getKey());
         $data = static::parseResponse($response);
         if ($fresh = static::fromResponse($data)) {
             $this->fill($fresh->attributesToArray());

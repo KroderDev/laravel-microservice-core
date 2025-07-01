@@ -3,22 +3,24 @@
 namespace Tests\Auth;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Config;
-use Orchestra\Testbench\TestCase;
-use Kroderdev\LaravelMicroserviceCore\Auth\GatewayGuard;
+use Illuminate\Support\Facades\Session;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
+use Kroderdev\LaravelMicroserviceCore\Auth\GatewayGuard;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
+use Orchestra\Testbench\TestCase;
 
 class FakeAuthServiceClient extends AuthServiceClient
 {
     public string $token = 'token123';
+
     public string $refreshed = 'token456';
+
     public array $user = [
         'id' => '1',
         'roles' => ['admin'],
-        'permissions' => ['edit']
+        'permissions' => ['edit'],
     ];
 
     public function login(array $credentials): array
@@ -52,6 +54,7 @@ class GatewayGuardTest extends TestCase
 
         Auth::extend('gateway', function ($app, $name, array $config) {
             $provider = Auth::createUserProvider($config['provider'] ?? null);
+
             return new GatewayGuard(
                 $name,
                 $provider,
@@ -63,7 +66,7 @@ class GatewayGuardTest extends TestCase
 
         Config::set('auth.providers.users', [
             'driver' => 'eloquent',
-            'model'  => ExternalUser::class,
+            'model' => ExternalUser::class,
         ]);
         Config::set('auth.guards.gateway', ['driver' => 'gateway', 'provider' => 'users']);
     }

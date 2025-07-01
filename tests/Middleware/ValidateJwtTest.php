@@ -2,6 +2,7 @@
 
 namespace Tests\Middleware;
 
+use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
@@ -9,14 +10,14 @@ use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Orchestra\Testbench\TestCase;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Tests\Services\FakeGatewayClient;
 
 class ValidateJwtTest extends TestCase
 {
     protected string $privateKey;
+
     protected string $publicKey;
+
     protected string $tmpKeyPath;
 
     protected function setUp(): void
@@ -24,16 +25,17 @@ class ValidateJwtTest extends TestCase
         parent::setUp();
 
         $this->app->bind(ApiGatewayClientInterface::class, fn () => new FakeGatewayClient());
-        
+
         $this->app['router']->aliasMiddleware('permission', PermissionMiddleware::class);
 
-        $this->app->singleton(PermissionsClient::class, fn () => new class {
-            public function getAccessFor($user) {
+        $this->app->singleton(PermissionsClient::class, fn () => new class () {
+            public function getAccessFor($user)
+            {
                 return ['roles' => ['tester'], 'permissions' => ['view.dashboard']];
             }
         });
 
-        $this->privateKey = <<<EOD
+        $this->privateKey = <<<'EOD'
 -----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQCLU1enq5mXQfzAEM5KwPtHO2TwYW+I9/Y1Ulm2daUk3mR0Ug++
 G1nIGiM2OHMYwWG0O3k6i6dcQ7nZFreq7Dn4TqXbbeU22MTaRZi277RoR/Vv2a5/
@@ -51,7 +53,7 @@ FhZOO6kmk2m8OVEV0LUQ1kMzi+PbQAwenpeo/glEUh51214JS0Nw7SHprPj8gSCz
 -----END RSA PRIVATE KEY-----
 EOD;
 
-        $this->publicKey = <<<EOD
+        $this->publicKey = <<<'EOD'
 -----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCLU1enq5mXQfzAEM5KwPtHO2Tw
 YW+I9/Y1Ulm2daUk3mR0Ug++G1nIGiM2OHMYwWG0O3k6i6dcQ7nZFreq7Dn4TqXb
@@ -60,7 +62,7 @@ LB+5uf8kQwMQ2YpXpwIDAQAB
 -----END PUBLIC KEY-----
 EOD;
 
-    file_put_contents($this->tmpKeyPath, $this->publicKey);
+        file_put_contents($this->tmpKeyPath, $this->publicKey);
 
         // Secured route
         Route::middleware(ValidateJwt::class)->get('/secured', fn () => response()->json(['ok' => true]));
@@ -79,10 +81,9 @@ EOD;
         parent::tearDown();
     }
 
-
     protected function getEnvironmentSetUp($app)
     {
-        $this->tmpKeyPath = sys_get_temp_dir() . '/tmp_public.key';
+        $this->tmpKeyPath = sys_get_temp_dir().'/tmp_public.key';
         $app['config']->set('microservice.auth.jwt_public_key', $this->tmpKeyPath);
         $app['config']->set('microservice.auth.jwt_algorithm', 'RS256');
     }
@@ -99,7 +100,7 @@ EOD;
     public function test_rejects_invalid_token()
     {
         $response = $this->get('/secured', [
-            'Authorization' => 'Bearer invalid.token.here'
+            'Authorization' => 'Bearer invalid.token.here',
         ]);
 
         $response->assertStatus(401);
@@ -116,16 +117,16 @@ EOD;
 
         $jwt = JWT::encode($payload, $this->privateKey, 'RS256');
 
-        file_put_contents(__DIR__ . '/tmp_public.pem', $this->publicKey);
+        file_put_contents(__DIR__.'/tmp_public.pem', $this->publicKey);
 
         $response = $this->get('/secured', [
-            'Authorization' => "Bearer $jwt"
+            'Authorization' => "Bearer $jwt",
         ]);
 
         $response->assertStatus(200);
         $response->assertJson(['ok' => true]);
 
-        unlink(__DIR__ . '/tmp_public.pem');
+        unlink(__DIR__.'/tmp_public.pem');
     }
 
     /** @test */
@@ -139,15 +140,15 @@ EOD;
 
         $jwt = JWT::encode($payload, $this->privateKey, 'RS256');
 
-        file_put_contents(__DIR__ . '/tmp_public.pem', $this->publicKey);
+        file_put_contents(__DIR__.'/tmp_public.pem', $this->publicKey);
 
         $response = $this->get('/secured-with-permissions-2', [
-            'Authorization' => "Bearer $jwt"
+            'Authorization' => "Bearer $jwt",
         ]);
 
         $response->assertStatus(403);
 
-        unlink(__DIR__ . '/tmp_public.pem');
+        unlink(__DIR__.'/tmp_public.pem');
     }
 
     /** @test */
@@ -161,15 +162,15 @@ EOD;
 
         $jwt = JWT::encode($payload, $this->privateKey, 'RS256');
 
-        file_put_contents(__DIR__ . '/tmp_public.pem', $this->publicKey);
+        file_put_contents(__DIR__.'/tmp_public.pem', $this->publicKey);
 
         $response = $this->get('/secured-with-permissions', [
-            'Authorization' => "Bearer $jwt"
+            'Authorization' => "Bearer $jwt",
         ]);
 
         $response->assertStatus(200);
         $response->assertJson(['ok' => true]);
 
-        unlink(__DIR__ . '/tmp_public.pem');
+        unlink(__DIR__.'/tmp_public.pem');
     }
 }

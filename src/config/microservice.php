@@ -12,13 +12,13 @@ return [
     |
     */
     'middleware_aliases' => [
-        'jwt_auth'       => 'jwt.auth',         // e.g. 'jwt.auth' or null
+        'jwt_auth' => 'jwt.auth',         // e.g. 'jwt.auth' or null
         'correlation_id' => 'correlation.id',   // e.g. 'correlation.id' or ''
-        'load_access'    => 'load.access',
-        'role'           => 'role',
-        'permission'     => 'permission',
+        'load_access' => 'load.access',
+        'role' => 'role',
+        'permission' => 'permission',
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Configuration
@@ -48,7 +48,6 @@ return [
          */
         'jwt_algorithm' => env('JWT_ALGORITHM', 'RS256'),
 
-
         /**
          * The time-to-live (TTL) in seconds for caching JWT keys.
          * Determines how long the JWT key will be stored in cache before it expires.
@@ -76,7 +75,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Configuration settings related to the propagation of correlation IDs.
-    | 
+    |
     | These settings determine how correlation IDs are managed and passed between
     | different services or components within the microservice architecture.
     | Proper configuration ensures traceability and consistency for distributed requests.
@@ -127,7 +126,7 @@ return [
     */
     'health' => [
         'enabled' => env('HEALTH_ENDPOINT_ENABLED', true),
-        'path'    => '/api/health',
+        'path' => '/api/health',
     ],
 
     /*
@@ -140,7 +139,7 @@ return [
     | environment variable to control cache duration.
     */
     'permissions_cache_ttl' => env('PERMISSIONS_CACHE_TTL', 60),
-    'permissions_endpoint'  => env('PERMISSIONS_ENDPOINT', '/auth/permissions'),
+    'permissions_endpoint' => env('PERMISSIONS_ENDPOINT', '/auth/permissions'),
 
     /*
     |--------------------------------------------------------------------------
@@ -150,7 +149,7 @@ return [
     | Configure the session-based gateway guard for front-end applications.
     */
     'gateway_guard' => [
-        'user_model'  => \Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser::class,
+        'user_model' => \Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser::class,
         'load_access' => true,
         'me_cache_ttl' => env('GATEWAY_ME_CACHE_TTL', 300),
     ],

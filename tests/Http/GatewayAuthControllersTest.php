@@ -6,15 +6,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
-use Orchestra\Testbench\TestCase;
-use Kroderdev\LaravelMicroserviceCore\Auth\GatewayGuard;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
+use Kroderdev\LaravelMicroserviceCore\Auth\GatewayGuard;
+use Kroderdev\LaravelMicroserviceCore\Http\Auth\LoginController;
+use Kroderdev\LaravelMicroserviceCore\Http\Auth\LogoutController;
+use Kroderdev\LaravelMicroserviceCore\Http\Auth\RegisterController;
+use Kroderdev\LaravelMicroserviceCore\Http\Auth\SocialiteController;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
-use Kroderdev\LaravelMicroserviceCore\Http\Auth\LoginController;
-use Kroderdev\LaravelMicroserviceCore\Http\Auth\RegisterController;
-use Kroderdev\LaravelMicroserviceCore\Http\Auth\LogoutController;
-use Kroderdev\LaravelMicroserviceCore\Http\Auth\SocialiteController;
+use Orchestra\Testbench\TestCase;
 
 class FakeAuthServiceClient extends AuthServiceClient
 {
@@ -66,7 +66,7 @@ class GatewayAuthControllersTest extends TestCase
 
         Config::set('auth.providers.users', [
             'driver' => 'eloquent',
-            'model'  => ExternalUser::class,
+            'model' => ExternalUser::class,
         ]);
         Config::set('auth.guards.gateway', ['driver' => 'gateway', 'provider' => 'users']);
 

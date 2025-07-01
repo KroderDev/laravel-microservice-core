@@ -3,9 +3,9 @@
 namespace Tests\Services;
 
 use Illuminate\Support\Facades\Http;
-use Orchestra\Testbench\TestCase;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
+use Orchestra\Testbench\TestCase;
 
 class ApiGatewayClientTest extends TestCase
 {

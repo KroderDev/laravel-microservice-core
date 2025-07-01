@@ -2,19 +2,20 @@
 
 namespace Tests\Services;
 
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Cache;
-use Orchestra\Testbench\TestCase;
+use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Kroderdev\LaravelMicroserviceCore\Traits\HasAccess;
-use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
-use Illuminate\Foundation\Auth\User;
+use Orchestra\Testbench\TestCase;
 
 require_once __DIR__.'/FakeGatewayClient.php';
 
 class DummyUser extends User implements AccessUserInterface
 {
     use HasAccess;
+
     protected $fillable = ['id'];
 }
 
@@ -25,13 +26,21 @@ class PermissionsClientTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->gateway = new class extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeGatewayClient {
             public function get(string $uri, array $query = [])
             {
                 parent::get($uri, $query);
-                return new class {
-                    public function failed() { return false; }
-                    public function json() { return ['roles' => ['admin'], 'permissions' => ['edit.posts']]; }
+
+                return new class () {
+                    public function failed()
+                    {
+                        return false;
+                    }
+
+                    public function json()
+                    {
+                        return ['roles' => ['admin'], 'permissions' => ['edit.posts']];
+                    }
                 };
             }
         };

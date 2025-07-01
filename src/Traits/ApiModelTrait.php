@@ -40,7 +40,7 @@ trait ApiModelTrait
     public static function fromPaginatedResponse(array $response): LengthAwarePaginator
     {
         $items = collect($response['data'] ?? [])
-            ->map(fn($item) => static::fromApiResponse($item));
+            ->map(fn ($item) => static::fromApiResponse($item));
 
         $meta = $response ?? [];
 
@@ -52,5 +52,4 @@ trait ApiModelTrait
             ['path' => request()->url(), 'query' => request()->query()]
         );
     }
-
 }

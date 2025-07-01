@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
-use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Symfony\Component\HttpFoundation\Response;
 
 class ValidateJwt
@@ -25,14 +24,14 @@ class ValidateJwt
         $prefix = config('microservice.auth.prefix', 'Bearer');
         $authHeader = $request->header($header);
 
-        if (!$authHeader || !str_starts_with($authHeader, (string)$prefix . ' ')) {
+        if (! $authHeader || ! str_starts_with($authHeader, (string) $prefix.' ')) {
             return response()->json(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = substr($authHeader, strlen((string)$prefix) + 1);
+        $token = substr($authHeader, strlen((string) $prefix) + 1);
 
         try {
-            $publicKey = Cache::remember('jwt_public_key', config('microservice.auth.jwt_cache_ttl', 3600), function() {
+            $publicKey = Cache::remember('jwt_public_key', config('microservice.auth.jwt_cache_ttl', 3600), function () {
                 return file_get_contents(config('microservice.auth.jwt_public_key'));
             });
 
@@ -51,6 +50,7 @@ class ValidateJwt
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Invalid token', 'message' => $e->getMessage()], Response::HTTP_UNAUTHORIZED);
             }
+
             return response('Unauthorized', Response::HTTP_UNAUTHORIZED);
         }
 

@@ -2,35 +2,30 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Auth;
 
-use Illuminate\Auth\Authenticatable;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
-use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
+use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
 
 class GatewayGuard extends SessionGuard
 {
     protected AuthServiceClient $client;
+
     protected ?string $token = null;
+
     protected string $userModel;
+
     protected bool $loadAccess;
 
     /**
      * GatewayGuard constructor.
-     *
-     * @param string $name
-     * @param UserProvider $provider
-     * @param Session $session
-     * @param Request $request
-     * @param AuthServiceClient $client
      */
     public function __construct(
         string $name,
@@ -73,7 +68,7 @@ class GatewayGuard extends SessionGuard
                 $user->loadAccess($data['roles'] ?? [], $data['permissions'] ?? []);
             }
             $this->setUser($user);
-            //$this->fireAuthenticatedEvent($this->user); SetUser does this
+            // $this->fireAuthenticatedEvent($this->user); SetUser does this
         }
 
         return $this->user;
@@ -82,8 +77,6 @@ class GatewayGuard extends SessionGuard
     /**
      * Retrieve user data using the current JWT token.
      * If the token is invalid, attempt to refresh it.
-     *
-     * @return array|null
      */
     protected function retrieveUserData(): ?array
     {
@@ -93,7 +86,8 @@ class GatewayGuard extends SessionGuard
             $publicKey = Cache::remember('jwt_public_key', config('microservice.auth.jwt_cache_ttl', 3600), function () {
                 Log::info('Attempting to load JWT public key for token validation.');
                 $publicKey = file_get_contents(config('microservice.auth.jwt_public_key'));
-                Log::info('JWT public key loaded.', ['publicKey' => substr($publicKey, 0, 30) . '...']);
+                Log::info('JWT public key loaded.', ['publicKey' => substr($publicKey, 0, 30).'...']);
+
                 return $publicKey;
             });
 
@@ -117,6 +111,7 @@ class GatewayGuard extends SessionGuard
                 if (! $token) {
                     // If refresh fails, remove token from session and return null
                     $this->session->remove($this->getName());
+
                     return null;
                 }
                 // Update the token and session with the new token
@@ -125,6 +120,7 @@ class GatewayGuard extends SessionGuard
             } catch (\Throwable $e) {
                 // If refresh throws, remove token from session and return null
                 $this->session->remove($this->getName());
+
                 return null;
             }
         }
@@ -141,19 +137,17 @@ class GatewayGuard extends SessionGuard
     /**
      * Update the session with the new token.
      *
-     * @param string $token
+     * @param  string  $token
      * @return void
      */
     protected function updateSession($token)
     {
         $this->session->put($this->getName(), $token);
-        //$this->session->migrate(true); Conflicts with CSRF
+        // $this->session->migrate(true); Conflicts with CSRF
     }
 
     /**
      * Get the current JWT token.
-     *
-     * @return string|null
      */
     public function token(): ?string
     {
@@ -167,8 +161,7 @@ class GatewayGuard extends SessionGuard
     /**
      * Attempt to authenticate a user using the given credentials.
      *
-     * @param array $credentials
-     * @param bool $remember
+     * @param  bool  $remember
      * @return bool
      */
     public function attempt(array $credentials = [], $remember = false)
@@ -196,10 +189,7 @@ class GatewayGuard extends SessionGuard
     /**
      * Log the user in using a JWT token and optional user data.
      *
-     * @param string $token
-     * @param array $userData
-     * @param bool $remember
-     * @return void
+     * @param  bool  $remember
      */
     public function loginWithToken(string $token, array $userData = [], $remember = false): void
     {
@@ -224,8 +214,7 @@ class GatewayGuard extends SessionGuard
     /**
      * Log the given user in.
      *
-     * @param AuthenticatableContract $user
-     * @param bool $remember
+     * @param  bool  $remember
      * @return void
      */
     public function login(AuthenticatableContract $user, $remember = false)

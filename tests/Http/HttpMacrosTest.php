@@ -26,6 +26,7 @@ class HttpMacrosTest extends TestCase
 
         Route::get('/macro', function () {
             Http::apiGateway()->get('/foo');
+
             return response()->json(['ok' => true]);
         });
 
@@ -44,7 +45,7 @@ class HttpMacrosTest extends TestCase
         Http::apiGateway()->get('/foo');
 
         Http::assertSent(function ($request) {
-            return !$request->hasHeader('X-Correlation-ID');
+            return ! $request->hasHeader('X-Correlation-ID');
         });
     }
 }

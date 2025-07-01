@@ -11,6 +11,7 @@ use Kroderdev\LaravelMicroserviceCore\Traits\RedirectsIfRequested;
 class SocialiteController
 {
     use RedirectsIfRequested;
+
     protected AuthServiceClient $client;
 
     public function __construct(AuthServiceClient $client)

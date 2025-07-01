@@ -9,8 +9,9 @@ use Kroderdev\LaravelMicroserviceCore\Traits\HasAccess;
 
 class ExternalUser extends Authenticatable implements AccessUserInterface
 {
-    use Notifiable, HasAccess;
-    
+    use HasAccess;
+    use Notifiable;
+
     protected $attributes = [];
 
     public function __construct(array $attributes = [])
@@ -20,7 +21,18 @@ class ExternalUser extends Authenticatable implements AccessUserInterface
         $this->syncOriginal();
     }
 
-    public function getAuthIdentifierName() { return 'id'; }
-    public function getAuthIdentifier() { return $this->attributes[$this->getAuthIdentifierName()] ?? null; }
-    public function getAuthPassword() { return null; }
+    public function getAuthIdentifierName()
+    {
+        return 'id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->attributes[$this->getAuthIdentifierName()] ?? null;
+    }
+
+    public function getAuthPassword()
+    {
+        return null;
+    }
 }

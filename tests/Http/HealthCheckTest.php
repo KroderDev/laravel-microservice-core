@@ -2,8 +2,8 @@
 
 namespace Tests\Http;
 
-use Orchestra\Testbench\TestCase;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
+use Orchestra\Testbench\TestCase;
 
 class HealthCheckTest extends TestCase
 {
@@ -18,12 +18,12 @@ class HealthCheckTest extends TestCase
         $response = $this->get('/api/health');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'status',
-                     'app',
-                     'environment',
-                     'laravel',
-                     'timestamp',
-                 ]);
+            ->assertJsonStructure([
+                'status',
+                'app',
+                'environment',
+                'laravel',
+                'timestamp',
+            ]);
     }
 }

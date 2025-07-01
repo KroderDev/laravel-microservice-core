@@ -10,6 +10,7 @@ use Kroderdev\LaravelMicroserviceCore\Traits\RedirectsIfRequested;
 class RegisterController
 {
     use RedirectsIfRequested;
+
     protected AuthServiceClient $client;
 
     public function __construct(AuthServiceClient $client)

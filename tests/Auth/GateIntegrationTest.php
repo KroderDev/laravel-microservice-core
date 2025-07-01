@@ -3,9 +3,9 @@
 namespace Tests\Auth;
 
 use Illuminate\Support\Facades\Gate;
-use Orchestra\Testbench\TestCase;
-use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
+use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
+use Orchestra\Testbench\TestCase;
 
 class GateIntegrationTest extends TestCase
 {

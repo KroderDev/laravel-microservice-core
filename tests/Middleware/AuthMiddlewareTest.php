@@ -4,8 +4,8 @@ namespace Tests\Middleware;
 
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
-use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
 use Orchestra\Testbench\TestCase;
 
 class AuthMiddlewareTest extends TestCase

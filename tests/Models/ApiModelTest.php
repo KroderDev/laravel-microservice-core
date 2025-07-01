@@ -3,14 +3,16 @@
 namespace Tests\Models;
 
 use Orchestra\Testbench\TestCase;
+
 require_once __DIR__.'/../Services/FakeGatewayClient.php';
-use Tests\Services\FakeGatewayClient;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Models\Model as ApiModel;
+use Tests\Services\FakeGatewayClient;
 
 class RemoteUser extends ApiModel
 {
     protected static string $endpoint = '/users';
+
     protected $fillable = ['id', 'name'];
 }
 
@@ -34,10 +36,11 @@ class ApiModelTest extends TestCase
     public function all_users_gateway()
     {
         // Simulate the gateway returning an array of users
-        $this->gateway = new class extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeGatewayClient {
             public function get(string $uri, array $query = [])
             {
                 parent::get($uri, $query);
+
                 // Simulate API returning an array of users
                 return ['data' => [
                     ['id' => 1, 'name' => 'Alice'],
@@ -57,13 +60,14 @@ class ApiModelTest extends TestCase
     /** @test */
     public function find_users_gateway()
     {
-        $this->gateway = new class extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeGatewayClient {
             public function get(string $uri, array $query = [])
             {
                 parent::get($uri, $query);
                 if ($uri === '/users/5') {
                     return ['data' => ['id' => 5, 'name' => 'Eve']];
                 }
+
                 return null;
             }
         };
@@ -79,10 +83,11 @@ class ApiModelTest extends TestCase
     /** @test */
     public function find_users_gateway_returns_null_when_not_found()
     {
-        $this->gateway = new class extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeGatewayClient {
             public function get(string $uri, array $query = [])
             {
                 parent::get($uri, $query);
+
                 return null; // Simulate not found
             }
         };
@@ -96,10 +101,11 @@ class ApiModelTest extends TestCase
     /** @test */
     public function create_users_gateway()
     {
-        $this->gateway = new class extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeGatewayClient {
             public function post(string $uri, array $data = [])
             {
                 parent::post($uri, $data);
+
                 // Ensure a valid array is always returned to avoid TypeError in create()
                 return ['data' => ['id' => 10, 'name' => $data['name']]];
             }
@@ -116,10 +122,11 @@ class ApiModelTest extends TestCase
     /** @test */
     public function all_users_gateway_handles_empty_response()
     {
-        $this->gateway = new class extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeGatewayClient {
             public function get(string $uri, array $query = [])
             {
                 parent::get($uri, $query);
+
                 return [];
             }
         };
@@ -134,10 +141,11 @@ class ApiModelTest extends TestCase
     /** @test */
     public function all_users_gateway_handles_api_failure()
     {
-        $this->gateway = new class extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeGatewayClient {
             public function get(string $uri, array $query = [])
             {
                 parent::get($uri, $query);
+
                 return false; // Simulate API failure
             }
         };

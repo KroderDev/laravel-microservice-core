@@ -9,7 +9,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^11.5",
-        "orchestra/testbench": "^10.4"
+        "orchestra/testbench": "^10.4",
+        "laravel/pint": "^1.22"
     },
     "license": "MIT",
     "autoload": {

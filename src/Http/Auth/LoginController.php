@@ -14,7 +14,7 @@ class LoginController
     {
         $credentials = $request->only('email', 'password');
 
-        if (!Auth::guard('gateway')->attempt($credentials)) {
+        if (! Auth::guard('gateway')->attempt($credentials)) {
             return response()->json(['message' => 'Invalid credentials'], 422);
         }
 

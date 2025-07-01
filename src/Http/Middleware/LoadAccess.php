@@ -26,9 +26,9 @@ class LoadAccess
         // If no user, skip
         if (! $user) {
             return response()->json([
-                'error'   => 'unauthorized',
+                'error' => 'unauthorized',
                 'message' => 'No authenticated user',
-                'status'  => Response::HTTP_UNAUTHORIZED,
+                'status' => Response::HTTP_UNAUTHORIZED,
             ], Response::HTTP_UNAUTHORIZED);
         }
 

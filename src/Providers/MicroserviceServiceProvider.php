@@ -13,6 +13,7 @@ use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException;
 use Kroderdev\LaravelMicroserviceCore\Http\HealthCheckController;
+use Kroderdev\LaravelMicroserviceCore\Http\Middleware\CorrelationId;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
@@ -21,7 +22,6 @@ use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClientFactory;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
-use Kroderdev\LaravelMicroserviceCore\Http\Middleware\CorrelationId;
 
 class MicroserviceServiceProvider extends ServiceProvider
 {
@@ -32,13 +32,14 @@ class MicroserviceServiceProvider extends ServiceProvider
     {
         // Config
         $this->mergeConfigFrom(
-            __DIR__.'/../config/microservice.php', 'microservice'
+            __DIR__.'/../config/microservice.php',
+            'microservice'
         );
 
         $this->app->singleton(ApiGatewayClientFactory::class, fn () => new ApiGatewayClientFactory());
         $this->app->singleton(ApiGatewayClient::class, fn () => ApiGatewayClient::make());
-        $this->app->bind(ApiGatewayClientInterface::class, fn($app) => $app->make(ApiGatewayClientFactory::class)->default()); 
-        $this->app->singleton(PermissionsClient::class, fn($app) => new PermissionsClient($app->make(ApiGatewayClientInterface::class)));
+        $this->app->bind(ApiGatewayClientInterface::class, fn ($app) => $app->make(ApiGatewayClientFactory::class)->default());
+        $this->app->singleton(PermissionsClient::class, fn ($app) => new PermissionsClient($app->make(ApiGatewayClientInterface::class)));
         $this->app->singleton(AuthServiceClient::class, fn () => new AuthServiceClient());
     }
 
@@ -73,6 +74,7 @@ class MicroserviceServiceProvider extends ServiceProvider
 
             if (str_starts_with($ability, 'role:')) {
                 $role = substr($ability, 5);
+
                 return $user->hasRole($role);
             }
 
@@ -86,7 +88,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         $aliases = config('microservice.middleware_aliases', []);
 
         // JWT Middleware alias
-        if (!empty($aliases['jwt_auth'])) {
+        if (! empty($aliases['jwt_auth'])) {
             $router->aliasMiddleware($aliases['jwt_auth'], ValidateJwt::class);
         }
 
@@ -120,7 +122,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         // Health check route
         if (config('microservice.health.enabled', true)) {
             $path = ltrim(config('microservice.health.path', '/api/health'), '/');
-            $router->get('/' . $path, HealthCheckController::class);
+            $router->get('/'.$path, HealthCheckController::class);
         }
 
         // HTTP

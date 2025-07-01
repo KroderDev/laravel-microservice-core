@@ -14,14 +14,10 @@ class CorrelationId
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  Request  $request
-     * @param  Closure  $next
-     * @return Response
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $cfg    = config('microservice.correlation');
+        $cfg = config('microservice.correlation');
         $header = $cfg['header'];
 
         // Use existing header or generate a new UUID

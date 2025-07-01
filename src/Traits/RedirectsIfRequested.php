@@ -2,10 +2,10 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Traits;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 
 trait RedirectsIfRequested
 {
