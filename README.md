@@ -6,6 +6,23 @@
 
 A toolkit that turns **Laravel 12** into a lightweight base for distributed microservices. 
 
+## Features
+
+- Middleware for JWT validation, correlation IDs and permission checks
+- Authorization helpers using roles and permissions
+- HTTP client macros and an API Gateway client
+- Session guard and controllers for frontend authentication
+- Health check endpoint at `/api/health`
+- Base model for API gateway resources
+
+---
+
+## Documentation
+
+See the [wiki](https://github.com/KroderDev/laravel-microservice-core/wiki) for full documentation.
+
+---
+
 ## Quick start
 
 Install via Composer:
@@ -18,25 +35,8 @@ composer require kroderdev/laravel-microservice-core
 
 After installation, publish the configuration file to your Laravel project:
 
-
 ```bash
 php artisan vendor:publish --provider="Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider"
 ```
 
 You can now customize the settings to match your microservice environment.
-
----
-
-## Publish Configuration
-
-To publish the configuration file, run:
-
-```bash
-php artisan vendor:publish --provider="Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider"
-```
-
----
-
-## Documentation
-
-See the [wiki](https://github.com/KroderDev/laravel-microservice-core/wiki) for full documentation.
