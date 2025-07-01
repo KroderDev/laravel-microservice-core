@@ -40,3 +40,6 @@ jobs:
 
     - name: Run print
       run: composer run-script print-test
+
+    - name: Check for vulnerable dependencies
+      run: composer audit
