@@ -24,3 +24,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced redirect logic and session handling in `GatewayGuard`.
 - Documentation reorganized with a new features list.
 - Commented out session migration due to CSRF conflicts.
+
+[0.4.0]: https://github.com/KroderDev/laravel-microservice-core/compare/v0.3.1...v0.4.0
