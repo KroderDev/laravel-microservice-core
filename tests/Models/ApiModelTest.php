@@ -209,7 +209,7 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
-    
+
     /** @test */
     public function from_api_response_maps_nested_relations()
     {
