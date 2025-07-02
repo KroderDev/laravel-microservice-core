@@ -37,9 +37,9 @@ class MicroserviceServiceProvider extends ServiceProvider
         );
 
         $this->app->singleton(ApiGatewayClientFactory::class, fn () => new ApiGatewayClientFactory());
-        $this->app->singleton(ApiGatewayClient::class, fn () => ApiGatewayClient::make());
+        $this->app->scoped(ApiGatewayClient::class, fn () => ApiGatewayClient::make());
         $this->app->bind(ApiGatewayClientInterface::class, fn ($app) => $app->make(ApiGatewayClientFactory::class)->default());
-        $this->app->singleton(PermissionsClient::class, fn ($app) => new PermissionsClient($app->make(ApiGatewayClientInterface::class)));
+        $this->app->scoped(PermissionsClient::class, fn ($app) => new PermissionsClient($app->make(ApiGatewayClientInterface::class)));
         $this->app->singleton(AuthServiceClient::class, fn () => new AuthServiceClient());
     }
 
