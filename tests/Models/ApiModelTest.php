@@ -16,6 +16,35 @@ class RemoteUser extends ApiModel
     protected $fillable = ['id', 'name'];
 }
 
+class FileModel extends ApiModel
+{
+    protected $fillable = ['id', 'type', 'name', 'size'];
+}
+
+class FolderModel extends ApiModel
+{
+    protected $fillable = ['id', 'name', 'children'];
+
+    protected static array $apiRelations = [
+        'children' => 'mapChildren',
+    ];
+
+    protected static function mapChildren(array $items)
+    {
+        return collect($items)->map(function (array $data) {
+            if ($data['type'] === 'file') {
+                return FileModel::fromApiResponse($data);
+            }
+
+            if ($data['type'] === 'folder') {
+                return FolderModel::fromApiResponse($data);
+            }
+
+            throw new \UnexpectedValueException('Unknown child type: '.$data['type']);
+        });
+    }
+}
+
 class ApiModelTest extends TestCase
 {
     protected FakeGatewayClient $gateway;
@@ -178,5 +207,54 @@ class ApiModelTest extends TestCase
         $this->assertSame([
             ['method' => 'DELETE', 'uri' => '/users/4'],
         ], $this->gateway->getCalls());
+    }
+
+    
+    /** @test */
+    public function from_api_response_maps_nested_relations()
+    {
+        $data = [
+            'id' => 1,
+            'name' => 'root',
+            'type' => 'folder',
+            'children' => [
+                ['id' => 2, 'name' => 'file1.txt', 'type' => 'file', 'size' => 123],
+                [
+                    'id' => 3,
+                    'name' => 'docs',
+                    'type' => 'folder',
+                    'children' => [
+                        ['id' => 4, 'name' => 'file2.txt', 'type' => 'file', 'size' => 456],
+                        [
+                            'id' => 5,
+                            'name' => 'deep',
+                            'type' => 'folder',
+                            'children' => [
+                                ['id' => 6, 'name' => 'file3.txt', 'type' => 'file', 'size' => 789],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $folder = FolderModel::fromApiResponse($data);
+
+        $this->assertEquals(1, $folder->id);
+        $this->assertCount(2, $folder->children);
+        $this->assertInstanceOf(FileModel::class, $folder->children[0]);
+        $this->assertEquals(123, $folder->children[0]->size);
+        $this->assertInstanceOf(FolderModel::class, $folder->children[1]);
+
+        $subfolder = $folder->children[1];
+        $this->assertCount(2, $subfolder->children);
+        $this->assertInstanceOf(FileModel::class, $subfolder->children[0]);
+        $this->assertInstanceOf(FolderModel::class, $subfolder->children[1]);
+
+        $deep = $subfolder->children[1];
+        $this->assertCount(1, $deep->children);
+        $this->assertInstanceOf(FileModel::class, $deep->children[0]);
+        $this->assertEquals('file3.txt', $deep->children[0]->name);
+        $this->assertEquals(789, $deep->children[0]->size);
     }
 }

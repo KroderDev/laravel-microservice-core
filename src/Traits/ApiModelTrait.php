@@ -4,18 +4,74 @@ namespace Kroderdev\LaravelMicroserviceCore\Traits;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Kroderdev\LaravelMicroserviceCore\Interfaces\ApiModelContract;
 
 trait ApiModelTrait
 {
+    /**
+     * Relation mapping callbacks.
+     *
+     * Each key should be the relation name and the value either a class name,
+     * an array with the class name for collections, or a closure that returns
+     * the relation value.
+     */
+    protected static array $apiRelations = [];
+
     /**
      * Instantiate a model from raw API data.
      */
     public static function fromApiResponse(array $data): static
     {
         $instance = new static();
+
+        foreach (static::$apiRelations as $relation => $cast) {
+            if (array_key_exists($relation, $data)) {
+                $instance->setRelation(
+                    $relation,
+                    static::castApiRelation($cast, $data[$relation])
+                );
+                unset($data[$relation]);
+            }
+        }
+
         $instance->fill($data);
 
         return $instance;
+    }
+
+    /**
+     * Cast the given relation value based on the provided definition.
+     */
+    protected static function castApiRelation(mixed $cast, mixed $value): mixed
+    {
+        if (is_callable($cast)) {
+            return $cast($value);
+        }
+
+        if (is_string($cast) && method_exists(static::class, $cast)) {
+            return static::$cast($value);
+        }
+
+        if (is_array($cast)) {
+            $class = $cast[0];
+
+            return collect($value)->map(fn ($item) => static::castApiRelation($class, $item));
+        }
+
+        if (is_string($cast) && class_exists($cast)) {
+            if (is_subclass_of($cast, ApiModelContract::class)) {
+                return $cast::fromApiResponse($value);
+            }
+
+            $model = new $cast();
+            if (method_exists($model, 'fill')) {
+                $model->fill($value);
+            }
+
+            return $model;
+        }
+
+        return $value;
     }
 
     /**
