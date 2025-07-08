@@ -1,0 +1,11 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ factoryImport }}
+use Kroderdev\LaravelMicroserviceCore\Models\Model;
+
+class {{ class }} extends Model
+{
+    {{ factory }}
+}

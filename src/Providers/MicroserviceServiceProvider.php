@@ -41,6 +41,10 @@ class MicroserviceServiceProvider extends ServiceProvider
         $this->app->bind(ApiGatewayClientInterface::class, fn ($app) => $app->make(ApiGatewayClientFactory::class)->default());
         $this->app->scoped(PermissionsClient::class, fn ($app) => new PermissionsClient($app->make(ApiGatewayClientInterface::class)));
         $this->app->singleton(AuthServiceClient::class, fn () => new AuthServiceClient());
+
+        $this->app->singleton(\Illuminate\Foundation\Console\ModelMakeCommand::class, function ($app) {
+            return new \Kroderdev\LaravelMicroserviceCore\Console\ModelMakeCommand($app['files']);
+        });
     }
 
     /**
@@ -48,6 +52,13 @@ class MicroserviceServiceProvider extends ServiceProvider
      */
     public function boot(Router $router): void
     {
+        // Commands
+        if ($this->app->runningInConsole()) {
+            \Illuminate\Console\Application::starting(function ($artisan) {
+                $artisan->add(new \Kroderdev\LaravelMicroserviceCore\Console\ModelMakeCommand($this->app['files']));
+            });
+        }
+
         // Publish config
         $this->publishes([
             __DIR__.'/../config/microservice.php' => config_path('microservice.php'),
