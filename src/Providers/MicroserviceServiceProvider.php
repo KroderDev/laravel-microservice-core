@@ -68,13 +68,17 @@ class MicroserviceServiceProvider extends ServiceProvider
         Auth::extend('gateway', function ($app, $name, array $config) {
             $provider = Auth::createUserProvider($config['provider'] ?? null);
 
-            return new GatewayGuard(
+            $guard = new GatewayGuard(
                 $name,
                 $provider,
                 $app['session.store'],
                 $app->make('request'),
                 $app->make(AuthServiceClient::class)
             );
+
+            $guard->setCookieJar($app['cookie']);
+
+            return $guard;
         });
 
         // Authorization gates
