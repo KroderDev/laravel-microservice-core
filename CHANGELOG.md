@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.4.1] - 2025-07-10
+### Added
+- Base `Controller` class with `apiResponse` method.
+- Helper methods for common JSON responses.
+- `$apiRelations` mapping in `ApiModelTrait` for nested relations.
+- Custom `make:model` command supporting a `--remote` option.
 
+### Changed
+- `ApiGatewayClient` and `PermissionsClient` bindings are now scoped.
+- `GatewayGuard` registers a `CookieJar` to avoid logout issues.
 
 ## [0.4.0] - 2025-07-01
 ### Added
@@ -25,4 +34,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation reorganized with a new features list.
 - Commented out session migration due to CSRF conflicts.
 
+[0.4.1]: https://github.com/KroderDev/laravel-microservice-core/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/KroderDev/laravel-microservice-core/compare/v0.3.1...v0.4.0
