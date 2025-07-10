@@ -23,4 +23,44 @@ abstract class Controller
             'data'    => $data,
         ], $statusCode);
     }
+
+    /**
+     * Convenience wrapper for successful responses.
+     */
+    protected function successResponse(mixed $data = null, string $message = null, int $statusCode = 200): JsonResponse
+    {
+        return $this->apiResponse($data, $message, $statusCode, true);
+    }
+
+    /**
+     * Response for newly created resources.
+     */
+    protected function createdResponse(mixed $data = null, string $message = 'Created'): JsonResponse
+    {
+        return $this->apiResponse($data, $message, 201, true);
+    }
+
+    /**
+     * Convenience wrapper for error responses.
+     */
+    protected function errorResponse(string $message, int $statusCode = 400, mixed $data = null): JsonResponse
+    {
+        return $this->apiResponse($data, $message, $statusCode, false);
+    }
+
+    /**
+     * Response used when a resource cannot be found.
+     */
+    protected function notFoundResponse(string $message = 'Not found'): JsonResponse
+    {
+        return $this->errorResponse($message, 404);
+    }
+
+    /**
+     * Response with no content.
+     */
+    protected function noContentResponse(): JsonResponse
+    {
+        return response()->json([], 204);
+    }
 }
