@@ -7,6 +7,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Auth\GatewayGuard;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
@@ -18,6 +19,7 @@ use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
+use Kroderdev\LaravelMicroserviceCore\Interfaces\ApiModelContract;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClientFactory;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
@@ -187,6 +189,24 @@ class MicroserviceServiceProvider extends ServiceProvider
                 ->withHeaders($correlation ? [$header => $correlation] : [])
                 ->baseUrl(config('microservice.api_gateway.url'))
                 ->timeout(5);
+        });
+
+        // Validation
+        Validator::extend('exists_remote', function ($attribute, $value, $parameters) {
+            $model = $parameters[0] ?? null;
+            $column = $parameters[1] ?? 'id';
+            if (! $model || ! is_subclass_of($model, ApiModelContract::class)) {
+                return false;
+            }
+
+            $values = is_array($value) ? $value : [$value];
+            foreach ($values as $v) {
+                if (! $model::find($v)) {
+                    return false;
+                }
+            }
+
+            return true;
         });
 
         // Exceptions
