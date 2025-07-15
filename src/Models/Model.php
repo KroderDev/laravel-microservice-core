@@ -40,6 +40,22 @@ abstract class Model extends BaseModel implements ApiModelContract
     }
 
     /**
+     * Start a new query for the model.
+     */
+    public static function query(): QueryBuilder
+    {
+        return new QueryBuilder(static::class);
+    }
+
+    /**
+     * Filter models by the given column and value.
+     */
+    public static function where(string $column, mixed $value): QueryBuilder
+    {
+        return static::query()->where($column, $value);
+    }
+
+    /**
      * Get all models.
      */
     public static function all($columns = ['*']): Collection

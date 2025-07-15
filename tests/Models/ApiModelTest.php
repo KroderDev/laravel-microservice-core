@@ -209,6 +209,29 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
+    /** @test */
+    public function where_get_filters_results()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+
+                return ['data' => [
+                    ['id' => 7, 'name' => $query['name'] ?? ''],
+                ]];
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $users = RemoteUser::where('name', 'Alice')->get();
+
+        $this->assertSame([
+            ['method' => 'GET', 'uri' => '/users', 'query' => ['name' => 'Alice']],
+        ], $this->gateway->getCalls());
+        $this->assertCount(1, $users);
+        $this->assertEquals('Alice', $users[0]->name);
+    }
 
     /** @test */
     public function from_api_response_maps_nested_relations()
