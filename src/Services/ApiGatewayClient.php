@@ -69,10 +69,20 @@ class ApiGatewayClient implements ApiGatewayClientInterface
         if (is_object($response) && method_exists($response, 'failed') && $response->failed()) {
             $data = method_exists($response, 'json') ? $response->json() : [];
 
+            $message = '';
+            if (is_array($data)) {
+                $message = $data['message'] ?? ($data['error'] ?? '');
+            }
+
             throw new ApiGatewayException(
                 method_exists($response, 'status') ? $response->status() : 500,
-                is_array($data) ? $data : []
+                is_array($data) ? $data : [],
+                $message
             );
+        }
+
+        if (is_object($response) && method_exists($response, 'json')) {
+            return response()->json($response->json(), $response->status());
         }
 
         return $response;

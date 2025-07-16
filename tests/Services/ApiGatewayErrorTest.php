@@ -18,18 +18,52 @@ class ApiGatewayErrorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Http::fake(['*' => Http::response(['error' => 'unavailable'], 503)]);
 
         Route::get('/gateway-error', function () {
             return app(ApiGatewayClient::class)->get('/fail');
         });
     }
 
-    /** @test */
-    public function propagates_gateway_status_code()
+    public static function statusProvider(): array
     {
-        $this->get('/gateway-error')
-            ->assertStatus(503)
-            ->assertJson(['error' => 'unavailable']);
+        return [[200], [201], [400], [401], [419], [500]];
+    }
+
+    /**
+     * @test
+     * @dataProvider statusProvider
+     */
+    public function propagates_gateway_status_code(int $status)
+    {
+        Http::fake(['*' => Http::response(['message' => 'm'], $status)]);
+
+        $response = $this->getJson('/gateway-error');
+        $response->assertStatus($status);
+
+        if ($status >= 400) {
+            $response->assertJson(['error' => 'm']);
+        }
+    }
+
+    /** @test */
+    public function aborts_in_frontend_context()
+    {
+        Http::fake(['*' => Http::response(['message' => 'nope'], 401)]);
+
+        $this->withoutExceptionHandling();
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $this->expectExceptionMessage('nope');
+
+        $this->get('/gateway-error');
+    }
+
+    /** @test */
+    public function returns_json_in_service_context()
+    {
+        Http::fake(['*' => Http::response(['message' => 'bad'], 400)]);
+
+        $this->getJson('/gateway-error')
+            ->assertStatus(400)
+            ->assertJson(['error' => 'bad']);
     }
 }

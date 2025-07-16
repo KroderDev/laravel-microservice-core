@@ -214,7 +214,14 @@ class MicroserviceServiceProvider extends ServiceProvider
 
         if (method_exists($handler, 'renderable')) {
             $handler->renderable(function (ApiGatewayException $e, $request) {
-                return response()->json($e->getData(), $e->getStatusCode());
+                $status = $e->getStatusCode();
+                $message = $e->getMessage();
+
+                if (! $request->expectsJson()) {
+                    abort($status, $message);
+                }
+
+                return response()->json(['error' => $message], $status);
             });
         }
     }
