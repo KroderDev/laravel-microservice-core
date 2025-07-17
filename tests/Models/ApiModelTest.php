@@ -198,6 +198,21 @@ class ApiModelTest extends TestCase
     }
 
     /** @test */
+    public function update_users_respects_configured_method()
+    {
+        $this->app['config']->set('microservice.models.update_method', 'post');
+
+        $user = new RemoteUser(['id' => 12, 'name' => 'Old']);
+        $user->exists = true;
+        $user->name = 'New';
+        $user->save();
+
+        $this->assertSame([
+            ['method' => 'POST', 'uri' => '/users/12', 'data' => ['id' => 12, 'name' => 'New']],
+        ], $this->gateway->getCalls());
+    }
+
+    /** @test */
     public function delete_users_gateway()
     {
         $user = new RemoteUser(['id' => 4]);
@@ -206,6 +221,20 @@ class ApiModelTest extends TestCase
 
         $this->assertSame([
             ['method' => 'DELETE', 'uri' => '/users/4'],
+        ], $this->gateway->getCalls());
+    }
+
+    /** @test */
+    public function delete_users_respects_configured_method()
+    {
+        $this->app['config']->set('microservice.models.delete_method', 'post');
+
+        $user = new RemoteUser(['id' => 5]);
+        $user->exists = true;
+        $user->delete();
+
+        $this->assertSame([
+            ['method' => 'POST', 'uri' => '/users/5', 'data' => []],
         ], $this->gateway->getCalls());
     }
 

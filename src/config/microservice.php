@@ -167,4 +167,17 @@ return [
     'gateway_auth' => [
         'default_redirect' => env('GATEWAY_AUTH_DEFAULT_REDIRECT', '/'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model HTTP Methods
+    |--------------------------------------------------------------------------
+    |
+    | Configure which HTTP verbs are used when models are updated or deleted
+    | through the API gateway. Defaults align with Laravel's expectations.
+    */
+    'models' => [
+        'update_method' => env('MODEL_UPDATE_METHOD', 'put'),
+        'delete_method' => env('MODEL_DELETE_METHOD', 'delete'),
+    ],
 ];

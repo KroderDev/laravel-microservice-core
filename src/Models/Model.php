@@ -109,7 +109,8 @@ abstract class Model extends BaseModel implements ApiModelContract
     public function save(array $options = []): bool
     {
         if ($this->exists) {
-            $response = static::client()->put(static::endpoint().'/'.$this->getKey(), $this->attributesToArray());
+            $method = strtolower(config('microservice.models.update_method', 'put'));
+            $response = static::client()->{$method}(static::endpoint().'/'.$this->getKey(), $this->attributesToArray());
         } else {
             $response = static::client()->post(static::endpoint(), $this->attributesToArray());
         }
@@ -129,7 +130,8 @@ abstract class Model extends BaseModel implements ApiModelContract
      */
     public function delete(): bool
     {
-        $response = static::client()->delete(static::endpoint().'/'.$this->getKey());
+        $method = strtolower(config('microservice.models.delete_method', 'delete'));
+        $response = static::client()->{$method}(static::endpoint().'/'.$this->getKey());
 
         if (is_object($response) && method_exists($response, 'successful')) {
             return $response->successful();
