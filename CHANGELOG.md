@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Query builder with `where()->get()` support for remote models.
 - Smart error handling based on the request's expected format.
 - Error propagation improvements with tests for all status codes.
+- Introduced `ParsesApiResponse` trait to centralize API response parsing logic.
+
+### Changed
+- Refactored `QueryBuilder` and `ApiModel` to use the new `ParsesApiResponse` trait, removing duplicate `parseResponse` implementations.
+
 
 ## [0.4.1] - 2025-07-10
 ### Added

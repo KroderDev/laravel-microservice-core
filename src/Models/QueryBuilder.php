@@ -3,9 +3,12 @@
 namespace Kroderdev\LaravelMicroserviceCore\Models;
 
 use Illuminate\Support\Collection;
+use Kroderdev\LaravelMicroserviceCore\Traits\ParsesApiResponse;
 
 class QueryBuilder
 {
+    use ParsesApiResponse;
+
     protected string $model;
 
     protected array $filters = [];
@@ -30,26 +33,5 @@ class QueryBuilder
         $data = $this->parseResponse($response);
 
         return $model::fromCollection($data['data'] ?? $data);
-    }
-
-    protected function parseResponse($response): array
-    {
-        if ($response === null) {
-            return [];
-        }
-
-        if (is_array($response)) {
-            return $response;
-        }
-
-        if ($response instanceof Collection) {
-            return $response->toArray();
-        }
-
-        if (method_exists($response, 'json')) {
-            return $response->json();
-        }
-
-        return (array) $response;
     }
 }

@@ -9,10 +9,12 @@ use Illuminate\Support\Str;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Interfaces\ApiModelContract;
 use Kroderdev\LaravelMicroserviceCore\Traits\ApiModelTrait;
+use Kroderdev\LaravelMicroserviceCore\Traits\ParsesApiResponse;
 
 abstract class Model extends BaseModel implements ApiModelContract
 {
     use ApiModelTrait;
+    use ParsesApiResponse;
 
     /**
      * Endpoint for this model. Defaults to plural kebab of the class name.
@@ -149,29 +151,5 @@ abstract class Model extends BaseModel implements ApiModelContract
         }
 
         return $this;
-    }
-
-    /**
-     * Normalize different response types to array.
-     */
-    protected static function parseResponse($response): array
-    {
-        if ($response === null) {
-            return [];
-        }
-
-        if (is_array($response)) {
-            return $response;
-        }
-
-        if ($response instanceof Collection) {
-            return $response->toArray();
-        }
-
-        if (method_exists($response, 'json')) {
-            return $response->json();
-        }
-
-        return (array) $response;
     }
 }
