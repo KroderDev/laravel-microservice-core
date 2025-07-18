@@ -24,6 +24,7 @@ trait ApiModelTrait
     {
         $instance = new static();
 
+        // Handle API relations defined in the model
         foreach (static::$apiRelations as $relation => $cast) {
             if (array_key_exists($relation, $data)) {
                 $instance->setRelation(
@@ -34,7 +35,13 @@ trait ApiModelTrait
             }
         }
 
+        // Fill the model with the remaining data
         $instance->fill($data);
+
+        // Mark the instance as existing to prevent local database queries
+        if (property_exists($instance, 'exists')) {
+            $instance->exists = true;
+        }
 
         return $instance;
     }
