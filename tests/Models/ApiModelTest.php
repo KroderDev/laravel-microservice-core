@@ -314,7 +314,7 @@ class ApiModelTest extends TestCase
 
         $user->updateOrFail(['name' => 'Fail']);
     }
-    
+
     /** @test */
     public function where_get_filters_results()
     {
