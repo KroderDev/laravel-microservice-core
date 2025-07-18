@@ -3,6 +3,7 @@
 namespace Kroderdev\LaravelMicroserviceCore\Models;
 
 use Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -80,6 +81,18 @@ abstract class Model extends BaseModel implements ApiModelContract
     }
 
     /**
+     * Find a model by its primary key or throw an exception.
+     */
+    public static function findOrFail($id, $columns = ['*']): self
+    {
+        if ($model = static::find($id, $columns)) {
+            return $model;
+        }
+
+        throw (new ModelNotFoundException())->setModel(static::class, [$id]);
+    }
+
+    /**
      * Paginate models from the API.
      */
     public static function paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null): LengthAwarePaginator
@@ -101,6 +114,75 @@ abstract class Model extends BaseModel implements ApiModelContract
         $data = static::parseResponse($response);
 
         return static::fromResponse($data);
+    }
+
+    /**
+     * Update a model via the API.
+     *
+     * @param int|string $id The ID of the model to update.
+     * @param array $attributes The attributes to update.
+     * @return bool
+     */
+    public static function updateById($id, array $attributes): bool
+    {
+        $method = strtolower(config('microservice.models.update_method', 'put'));
+        $response = static::client()->{$method}(static::endpoint().'/'.$id, $attributes);
+
+        if (is_object($response) && method_exists($response, 'successful')) {
+            return $response->successful();
+        }
+
+        return true;
+    }
+
+    /**
+     * Update the model via the API.
+     */
+    public function update(array $attributes = [], array $options = []): bool
+    {
+        if (! $this->exists) {
+            return false;
+        }
+
+        $this->fill($attributes);
+
+        $method = strtolower(config('microservice.models.update_method', 'put'));
+        $response = static::client()->{$method}(static::endpoint().'/'.$this->getKey(), $this->attributesToArray());
+
+        $data = static::parseResponse($response);
+        if ($fresh = static::fromResponse($data)) {
+            $this->fill($fresh->attributesToArray());
+            $this->syncOriginal();
+        }
+
+        return true;
+    }
+
+    /**
+     * Update the model via the API, throwing an exception on failure.
+     */
+    public function updateOrFail(array $attributes = [], array $options = []): bool
+    {
+        if (! $this->exists) {
+            return false;
+        }
+
+        $this->fill($attributes);
+
+        $method = strtolower(config('microservice.models.update_method', 'put'));
+        $response = static::client()->{$method}(static::endpoint().'/'.$this->getKey(), $this->attributesToArray());
+
+        if (is_object($response) && method_exists($response, 'successful') && ! $response->successful()) {
+            throw new \RuntimeException('Update failed.');
+        }
+
+        $data = static::parseResponse($response);
+        if ($fresh = static::fromResponse($data)) {
+            $this->fill($fresh->attributesToArray());
+            $this->syncOriginal();
+        }
+
+        return true;
     }
 
     /**

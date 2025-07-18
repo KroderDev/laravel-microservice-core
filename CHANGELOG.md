@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error propagation improvements with tests for all status codes.
 - Introduced `ParsesApiResponse` trait to centralize API response parsing logic.
 - Configurable HTTP methods for model updates and deletions.
+- `updateById`, instance `update`, `updateOrFail`, and `findOrFail` for remote models.
 
 ### Changed
 - Refactored `QueryBuilder` and `ApiModel` to use the new `ParsesApiResponse` trait, removing duplicate `parseResponse` implementations.

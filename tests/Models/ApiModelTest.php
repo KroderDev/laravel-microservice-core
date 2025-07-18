@@ -239,6 +239,83 @@ class ApiModelTest extends TestCase
     }
 
     /** @test */
+    public function static_update_users_gateway()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function put(string $uri, array $data = [])
+            {
+                parent::put($uri, $data);
+
+                return collect();
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        RemoteUser::updateById(10, ['name' => 'Updated']);
+
+        $this->assertSame([
+            ['method' => 'PUT', 'uri' => '/users/10', 'data' => ['name' => 'Updated']],
+        ], $this->gateway->getCalls());
+    }
+
+    /** @test */
+    public function instance_update_users_gateway()
+    {
+        $user = new RemoteUser(['id' => 11, 'name' => 'Old']);
+        $user->exists = true;
+
+        $user->update(['name' => 'New']);
+
+        $this->assertSame([
+            ['method' => 'PUT', 'uri' => '/users/11', 'data' => ['id' => 11, 'name' => 'New']],
+        ], $this->gateway->getCalls());
+    }
+
+    /** @test */
+    public function find_or_fail_throws_when_not_found()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+
+                return null;
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+
+        RemoteUser::findOrFail(999);
+    }
+
+    /** @test */
+    public function update_or_fail_throws_on_failure()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function put(string $uri, array $data = [])
+            {
+                parent::put($uri, $data);
+
+                return new class () {
+                    public function successful()
+                    {
+                        return false;
+                    }
+                };
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $user = new RemoteUser(['id' => 13, 'name' => 'Old']);
+        $user->exists = true;
+
+        $this->expectException(\RuntimeException::class);
+
+        $user->updateOrFail(['name' => 'Fail']);
+    }
+    
+    /** @test */
     public function where_get_filters_results()
     {
         $this->gateway = new class () extends FakeGatewayClient {
