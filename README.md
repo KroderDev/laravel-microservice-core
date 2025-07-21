@@ -45,7 +45,7 @@ php artisan make:model RemoteUser --remote
 This will generate a RemoteUser model that extends the core Model class with remote-resource support.
 
 ```php
-use Kroderdev\\LaravelMicroserviceCore\\Models\\Model;
+use Kroderdev\LaravelMicroserviceCore\Models\Model;
 
 class RemoteUser extends Model
 {
