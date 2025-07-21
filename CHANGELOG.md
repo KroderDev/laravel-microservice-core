@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Refactored `QueryBuilder` and `ApiModel` to use the new `ParsesApiResponse` trait, removing duplicate `parseResponse` implementations.
+- Improved README with installation details, key features, and basic-usage example.
 
 ### Fixed
 - Remote models hydrated from API responses are marked as existing to prevent local database queries.
