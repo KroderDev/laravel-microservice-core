@@ -386,4 +386,28 @@ class ApiModelTest extends TestCase
         $this->assertEquals('file3.txt', $deep->children[0]->name);
         $this->assertEquals(789, $deep->children[0]->size);
     }
+
+    /** @test */
+    public function paginate_returns_empty_paginator_on_404()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function get(string $uri, array $query = [])
+            {
+                parent::get($uri, $query);
+
+                throw new \Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException(404);
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $paginator = RemoteUser::paginate(10);
+
+        $this->assertSame([
+            ['method' => 'GET', 'uri' => '/users', 'query' => ['page' => 1, 'per_page' => 10]],
+        ], $this->gateway->getCalls());
+        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $paginator);
+        $this->assertCount(0, $paginator->items());
+        $this->assertEquals(0, $paginator->total());
+        $this->assertEquals(200, response()->json($paginator->items())->status());
+    }
 }

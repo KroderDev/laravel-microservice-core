@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException;
 use Kroderdev\LaravelMicroserviceCore\Interfaces\ApiModelContract;
 use Kroderdev\LaravelMicroserviceCore\Traits\ApiModelTrait;
 use Kroderdev\LaravelMicroserviceCore\Traits\ParsesApiResponse;
@@ -99,8 +100,18 @@ abstract class Model extends BaseModel implements ApiModelContract
     {
         $page = $page ?: LengthAwarePaginator::resolveCurrentPage($pageName);
         $query = [$pageName => $page, 'per_page' => $perPage];
-        $response = static::client()->get(static::endpoint(), $query);
-        $data = static::parseResponse($response);
+
+        // Handle the case where the API returns a 404 for an empty collection
+        try {
+            $response = static::client()->get(static::endpoint(), $query);
+            $data = static::parseResponse($response);
+        } catch (ApiGatewayException $e) {
+            if ($e->getStatusCode() === 404) {
+                return new LengthAwarePaginator([], 0, $perPage);
+            }
+
+            throw $e;
+        }
 
         return static::fromPaginatedResponse($data);
     }
