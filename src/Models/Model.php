@@ -139,8 +139,22 @@ abstract class Model extends BaseModel implements ApiModelContract
         $method = strtolower(config('microservice.models.update_method', 'put'));
         $response = static::client()->{$method}(static::endpoint().'/'.$id, $attributes);
 
-        if (is_object($response) && method_exists($response, 'successful')) {
-            return $response->successful();
+        if (is_object($response)) {
+            if (method_exists($response, 'successful')) {
+                return $response->successful();
+            }
+
+            if (method_exists($response, 'status')) {
+                $status = $response->status();
+
+                return $status >= 200 && $status < 300;
+            }
+
+            if (method_exists($response, 'getStatusCode')) {
+                $status = $response->getStatusCode();
+
+                return $status >= 200 && $status < 300;
+            }
         }
 
         return true;
@@ -159,6 +173,28 @@ abstract class Model extends BaseModel implements ApiModelContract
 
         $method = strtolower(config('microservice.models.update_method', 'put'));
         $response = static::client()->{$method}(static::endpoint().'/'.$this->getKey(), $this->attributesToArray());
+
+        if (is_object($response)) {
+            if (method_exists($response, 'successful') && ! $response->successful()) {
+                return false;
+            }
+
+            if (method_exists($response, 'status')) {
+                $status = $response->status();
+
+                if ($status < 200 || $status >= 300) {
+                    return false;
+                }
+            }
+
+            if (method_exists($response, 'getStatusCode')) {
+                $status = $response->getStatusCode();
+
+                if ($status < 200 || $status >= 300) {
+                    return false;
+                }
+            }
+        }
 
         $data = static::parseResponse($response);
         if ($fresh = static::fromResponse($data)) {
@@ -182,9 +218,26 @@ abstract class Model extends BaseModel implements ApiModelContract
 
         $method = strtolower(config('microservice.models.update_method', 'put'));
         $response = static::client()->{$method}(static::endpoint().'/'.$this->getKey(), $this->attributesToArray());
+        if (is_object($response)) {
+            if (method_exists($response, 'successful') && ! $response->successful()) {
+                throw new \RuntimeException('Update failed.');
+            }
 
-        if (is_object($response) && method_exists($response, 'successful') && ! $response->successful()) {
-            throw new \RuntimeException('Update failed.');
+            if (method_exists($response, 'status')) {
+                $status = $response->status();
+
+                if ($status < 200 || $status >= 300) {
+                    throw new \RuntimeException('Update failed with status '.$status.'.');
+                }
+            }
+
+            if (method_exists($response, 'getStatusCode')) {
+                $status = $response->getStatusCode();
+
+                if ($status < 200 || $status >= 300) {
+                    throw new \RuntimeException('Update failed with status '.$status.'.');
+                }
+            }
         }
 
         $data = static::parseResponse($response);
@@ -208,6 +261,28 @@ abstract class Model extends BaseModel implements ApiModelContract
             $response = static::client()->post(static::endpoint(), $this->attributesToArray());
         }
 
+        if (is_object($response)) {
+            if (method_exists($response, 'successful') && ! $response->successful()) {
+                return false;
+            }
+
+            if (method_exists($response, 'status')) {
+                $status = $response->status();
+
+                if ($status < 200 || $status >= 300) {
+                    return false;
+                }
+            }
+
+            if (method_exists($response, 'getStatusCode')) {
+                $status = $response->getStatusCode();
+
+                if ($status < 200 || $status >= 300) {
+                    return false;
+                }
+            }
+        }
+
         $data = static::parseResponse($response);
         if ($fresh = static::fromResponse($data)) {
             $this->fill($fresh->attributesToArray());
@@ -225,9 +300,22 @@ abstract class Model extends BaseModel implements ApiModelContract
     {
         $method = strtolower(config('microservice.models.delete_method', 'delete'));
         $response = static::client()->{$method}(static::endpoint().'/'.$this->getKey());
+        if (is_object($response)) {
+            if (method_exists($response, 'successful')) {
+                return $response->successful();
+            }
 
-        if (is_object($response) && method_exists($response, 'successful')) {
-            return $response->successful();
+            if (method_exists($response, 'status')) {
+                $status = $response->status();
+
+                return $status >= 200 && $status < 300;
+            }
+
+            if (method_exists($response, 'getStatusCode')) {
+                $status = $response->getStatusCode();
+
+                return $status >= 200 && $status < 300;
+            }
         }
 
         return true;
