@@ -84,11 +84,10 @@ class GatewayGuard extends SessionGuard
         try {
             // Attempt to get the JWT public key from cache or load it from file
             $publicKey = Cache::remember('jwt_public_key', config('microservice.auth.jwt_cache_ttl', 3600), function () {
-                Log::info('Attempting to load JWT public key for token validation.');
-                $publicKey = file_get_contents(config('microservice.auth.jwt_public_key'));
-                Log::info('JWT public key loaded.', ['publicKey' => substr($publicKey, 0, 30).'...']);
+                $path = config('microservice.auth.jwt_public_key');
+                Log::info('Loaded JWT public key for token validation', ['path' => $path]);
 
-                return $publicKey;
+                return file_get_contents($path);
             });
 
             // Try to decode the token to check if it's valid
