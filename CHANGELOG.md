@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.4.3] - 2025-08-13
 ### Fixed
 - `paginate()` returns an empty paginator with a 200 status when the gateway responds with 404.
-
+- `paginate()` fixed the division by zero error when perPage is empty.
 
 ## [0.4.2] - 2025-07-21
 ### Added
@@ -53,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation reorganized with a new features list.
 - Commented out session migration due to CSRF conflicts.
 
+[0.4.3]: https://github.com/KroderDev/laravel-microservice-core/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/KroderDev/laravel-microservice-core/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/KroderDev/laravel-microservice-core/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/KroderDev/laravel-microservice-core/compare/v0.3.1...v0.4.0
