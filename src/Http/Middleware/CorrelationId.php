@@ -19,9 +19,13 @@ class CorrelationId
     {
         $cfg = config('microservice.correlation');
         $header = $cfg['header'];
+        $length = (int) ($cfg['length'] ?? 36);
 
-        // Use existing header or generate a new UUID
-        $id = $request->header($header) ?: Str::uuid()->toString();
+        // Use existing header or generate a new ID of the configured length
+        $id = $request->header($header);
+        if (! $id) {
+            $id = Str::random($length);
+        }
 
         // Set on request and response
         $request->headers->set($header, $id);
