@@ -107,10 +107,15 @@ trait ApiModelTrait
 
         $meta = $response ?? [];
 
+        $perPage = $meta['per_page'] ?? $items->count();
+        if ($perPage <= 0) {
+            $perPage = 10;
+        }
+
         return new LengthAwarePaginator(
             $items,
             $meta['total'] ?? $items->count(),
-            $meta['per_page'] ?? $items->count(),
+            $perPage,
             $meta['current_page'] ?? 1,
             ['path' => request()->url(), 'query' => request()->query()]
         );
