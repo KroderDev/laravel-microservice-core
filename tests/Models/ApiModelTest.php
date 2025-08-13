@@ -239,6 +239,30 @@ class ApiModelTest extends TestCase
     }
 
     /** @test */
+    public function delete_returns_false_on_failed_response()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function delete(string $uri)
+            {
+                parent::delete($uri);
+
+                return new class () {
+                    public function successful()
+                    {
+                        return false;
+                    }
+                };
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $user = new RemoteUser(['id' => 6]);
+        $user->exists = true;
+
+        $this->assertFalse($user->delete());
+    }
+
+    /** @test */
     public function static_update_users_gateway()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -259,6 +283,34 @@ class ApiModelTest extends TestCase
     }
 
     /** @test */
+    public function static_update_returns_false_on_failed_response()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function put(string $uri, array $data = [])
+            {
+                parent::put($uri, $data);
+
+                return new class () {
+                    public function successful()
+                    {
+                        return false;
+                    }
+
+                    public function json()
+                    {
+                        return [];
+                    }
+                };
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $result = RemoteUser::updateById(10, ['name' => 'Bad']);
+
+        $this->assertFalse($result);
+    }
+
+    /** @test */
     public function instance_update_users_gateway()
     {
         $user = new RemoteUser(['id' => 11, 'name' => 'Old']);
@@ -269,6 +321,56 @@ class ApiModelTest extends TestCase
         $this->assertSame([
             ['method' => 'PUT', 'uri' => '/users/11', 'data' => ['id' => 11, 'name' => 'New']],
         ], $this->gateway->getCalls());
+    }
+
+    /** @test */
+    public function update_returns_false_on_failed_response()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function put(string $uri, array $data = [])
+            {
+                parent::put($uri, $data);
+
+                return new class () {
+                    public function successful()
+                    {
+                        return false;
+                    }
+
+                    public function json()
+                    {
+                        return [];
+                    }
+                };
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $user = new RemoteUser(['id' => 12, 'name' => 'Old']);
+        $user->exists = true;
+
+        $this->assertFalse($user->update(['name' => 'Fail']));
+    }
+
+    /** @test */
+    public function update_propagates_api_gateway_exceptions()
+    {
+        $this->gateway = new class () extends FakeGatewayClient {
+            public function put(string $uri, array $data = [])
+            {
+                parent::put($uri, $data);
+
+                throw new \Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException(500);
+            }
+        };
+        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+
+        $user = new RemoteUser(['id' => 15, 'name' => 'Old']);
+        $user->exists = true;
+
+        $this->expectException(\Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException::class);
+
+        $user->update(['name' => 'Boom']);
     }
 
     /** @test */
