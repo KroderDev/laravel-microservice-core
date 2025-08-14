@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Session;
 
 trait RedirectsIfRequested
 {
-    protected function redirectIfRequested(Request $request, $response)
+    protected function redirectIfRequested(Request $request, mixed $response): mixed
     {
         if ($request->has('redirect')) {
             $redirectTo = $request->input('redirect');

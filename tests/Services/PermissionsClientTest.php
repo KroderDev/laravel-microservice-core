@@ -27,7 +27,7 @@ class PermissionsClientTest extends TestCase
     {
         parent::setUp();
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 

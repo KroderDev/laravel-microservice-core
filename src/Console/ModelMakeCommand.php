@@ -9,14 +9,14 @@ use Symfony\Component\Console\Input\InputOption;
 #[AsCommand(name: 'make:model', description: 'Create a new Eloquent model class')]
 class ModelMakeCommand extends BaseModelMakeCommand
 {
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return array_merge(parent::getOptions(), [
             ['remote', null, InputOption::VALUE_NONE, 'Indicates the model should extend the package base model'],
         ]);
     }
 
-    protected function getStub()
+    protected function getStub(): string
     {
         if ($this->option('remote')) {
             return __DIR__.'/stubs/remote-model.stub';

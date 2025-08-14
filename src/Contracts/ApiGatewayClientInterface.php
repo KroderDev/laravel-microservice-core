@@ -4,11 +4,11 @@ namespace Kroderdev\LaravelMicroserviceCore\Contracts;
 
 interface ApiGatewayClientInterface
 {
-    public function get(string $uri, array $query = []);
+    public function get(string $uri, array $query = []): mixed;
 
-    public function post(string $uri, array $data = []);
+    public function post(string $uri, array $data = []): mixed;
 
-    public function put(string $uri, array $data = []);
+    public function put(string $uri, array $data = []): mixed;
 
-    public function delete(string $uri);
+    public function delete(string $uri): mixed;
 }

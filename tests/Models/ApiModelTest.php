@@ -66,7 +66,7 @@ class ApiModelTest extends TestCase
     {
         // Simulate the gateway returning an array of users
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 
@@ -90,7 +90,7 @@ class ApiModelTest extends TestCase
     public function find_users_gateway()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
                 if ($uri === '/users/5') {
@@ -113,7 +113,7 @@ class ApiModelTest extends TestCase
     public function find_users_gateway_returns_null_when_not_found()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 
@@ -131,7 +131,7 @@ class ApiModelTest extends TestCase
     public function create_users_gateway()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function post(string $uri, array $data = [])
+            public function post(string $uri, array $data = []): mixed
             {
                 parent::post($uri, $data);
 
@@ -152,7 +152,7 @@ class ApiModelTest extends TestCase
     public function all_users_gateway_handles_empty_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 
@@ -171,7 +171,7 @@ class ApiModelTest extends TestCase
     public function all_users_gateway_handles_api_failure()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 
@@ -242,7 +242,7 @@ class ApiModelTest extends TestCase
     public function delete_returns_false_on_failed_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function delete(string $uri)
+            public function delete(string $uri): mixed
             {
                 parent::delete($uri);
 
@@ -266,7 +266,7 @@ class ApiModelTest extends TestCase
     public function static_update_users_gateway()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function put(string $uri, array $data = [])
+            public function put(string $uri, array $data = []): mixed
             {
                 parent::put($uri, $data);
 
@@ -286,7 +286,7 @@ class ApiModelTest extends TestCase
     public function static_update_returns_false_on_failed_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function put(string $uri, array $data = [])
+            public function put(string $uri, array $data = []): mixed
             {
                 parent::put($uri, $data);
 
@@ -327,7 +327,7 @@ class ApiModelTest extends TestCase
     public function update_returns_false_on_failed_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function put(string $uri, array $data = [])
+            public function put(string $uri, array $data = []): mixed
             {
                 parent::put($uri, $data);
 
@@ -356,7 +356,7 @@ class ApiModelTest extends TestCase
     public function update_propagates_api_gateway_exceptions()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function put(string $uri, array $data = [])
+            public function put(string $uri, array $data = []): mixed
             {
                 parent::put($uri, $data);
 
@@ -377,7 +377,7 @@ class ApiModelTest extends TestCase
     public function find_or_fail_throws_when_not_found()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 
@@ -395,7 +395,7 @@ class ApiModelTest extends TestCase
     public function update_or_fail_throws_on_failure()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function put(string $uri, array $data = [])
+            public function put(string $uri, array $data = []): mixed
             {
                 parent::put($uri, $data);
 
@@ -421,7 +421,7 @@ class ApiModelTest extends TestCase
     public function where_get_filters_results()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 
@@ -493,7 +493,7 @@ class ApiModelTest extends TestCase
     public function paginate_returns_empty_paginator_on_404()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
 

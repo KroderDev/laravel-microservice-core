@@ -36,35 +36,35 @@ class ApiGatewayClient implements ApiGatewayClientInterface
         return new static(Http::apiGatewayDirectWithToken($token));
     }
 
-    public function get(string $uri, array $query = [])
+    public function get(string $uri, array $query = []): mixed
     {
         return $this->handleResponse(
             $this->http->get($uri, $query)
         );
     }
 
-    public function post(string $uri, array $data = [])
+    public function post(string $uri, array $data = []): mixed
     {
         return $this->handleResponse(
             $this->http->post($uri, $data)
         );
     }
 
-    public function put(string $uri, array $data = [])
+    public function put(string $uri, array $data = []): mixed
     {
         return $this->handleResponse(
             $this->http->put($uri, $data)
         );
     }
 
-    public function delete(string $uri)
+    public function delete(string $uri): mixed
     {
         return $this->handleResponse(
             $this->http->delete($uri)
         );
     }
 
-    protected function handleResponse($response)
+    protected function handleResponse(mixed $response): mixed
     {
         if (is_object($response) && method_exists($response, 'failed') && $response->failed()) {
             $data = method_exists($response, 'json') ? $response->json() : [];

@@ -38,7 +38,7 @@ class ExistsRemoteTest extends TestCase
     public function passes_when_all_ids_exist()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
                 if (in_array($uri, ['/roles/1', '/roles/2'])) {
@@ -63,7 +63,7 @@ class ExistsRemoteTest extends TestCase
     public function rule_object_works_the_same()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
                 return ['data' => ['id' => (int) substr($uri, 7)]];
@@ -82,7 +82,7 @@ class ExistsRemoteTest extends TestCase
     public function fails_when_any_id_is_missing()
     {
         $this->gateway = new class () extends FakeGatewayClient {
-            public function get(string $uri, array $query = [])
+            public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
                 if ($uri === '/roles/1') {

@@ -45,7 +45,7 @@ class GatewayGuard extends SessionGuard
      *
      * @return mixed|null
      */
-    public function user()
+    public function user(): ?AuthenticatableContract
     {
         if ($this->loggedOut) {
             return null;
@@ -139,7 +139,7 @@ class GatewayGuard extends SessionGuard
      * @param  string  $token
      * @return void
      */
-    protected function updateSession($token)
+    protected function updateSession($token): void
     {
         $this->session->put($this->getName(), $token);
         // $this->session->migrate(true); Conflicts with CSRF
@@ -163,7 +163,7 @@ class GatewayGuard extends SessionGuard
      * @param  bool  $remember
      * @return bool
      */
-    public function attempt(array $credentials = [], $remember = false)
+    public function attempt(array $credentials = [], $remember = false): bool
     {
         $response = $this->client->login($credentials);
         $token = $response['access_token'] ?? null;
@@ -190,7 +190,7 @@ class GatewayGuard extends SessionGuard
      *
      * @param  bool  $remember
      */
-    public function loginWithToken(string $token, array $userData = [], $remember = false): void
+    public function loginWithToken(string $token, array $userData = [], bool $remember = false): void
     {
         $this->token = $token;
         $this->updateSession($token);
@@ -216,7 +216,7 @@ class GatewayGuard extends SessionGuard
      * @param  bool  $remember
      * @return void
      */
-    public function login(AuthenticatableContract $user, $remember = false)
+    public function login(AuthenticatableContract $user, $remember = false): void
     {
         $this->setUser($user);
         $this->fireLoginEvent($user, $remember);
@@ -227,7 +227,7 @@ class GatewayGuard extends SessionGuard
      *
      * @return void
      */
-    public function logout()
+    public function logout(): void
     {
         $this->clearUserDataFromStorage();
         $this->token = null;
@@ -240,7 +240,7 @@ class GatewayGuard extends SessionGuard
      *
      * @return bool
      */
-    public function viaRemember()
+    public function viaRemember(): bool
     {
         return false;
     }
