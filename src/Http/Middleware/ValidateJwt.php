@@ -3,16 +3,18 @@
 namespace Kroderdev\LaravelMicroserviceCore\Http\Middleware;
 
 use Closure;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
+use Kroderdev\LaravelMicroserviceCore\Services\JwtValidator;
 use Symfony\Component\HttpFoundation\Response;
 
 class ValidateJwt
 {
+    public function __construct(protected JwtValidator $validator)
+    {
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -31,11 +33,7 @@ class ValidateJwt
         $token = substr($authHeader, strlen((string) $prefix) + 1);
 
         try {
-            $publicKey = Cache::remember('jwt_public_key', config('microservice.auth.jwt_cache_ttl', 3600), function () {
-                return file_get_contents(config('microservice.auth.jwt_public_key'));
-            });
-
-            $decoded = JWT::decode($token, new Key($publicKey, config('microservice.auth.jwt_algorithm')));
+            $decoded = $this->validator->decode($token);
 
             // Auth from JWT
             $user = new ExternalUser(['sub' => $decoded->sub]);

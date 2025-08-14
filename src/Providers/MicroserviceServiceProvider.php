@@ -24,6 +24,7 @@ use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClientFactory;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
+use Kroderdev\LaravelMicroserviceCore\Services\JwtValidator;
 
 class MicroserviceServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         $this->app->bind(ApiGatewayClientInterface::class, fn ($app) => $app->make(ApiGatewayClientFactory::class)->default());
         $this->app->scoped(PermissionsClient::class, fn ($app) => new PermissionsClient($app->make(ApiGatewayClientInterface::class)));
         $this->app->singleton(AuthServiceClient::class, fn () => new AuthServiceClient());
+        $this->app->singleton(JwtValidator::class, fn () => new JwtValidator());
 
         $this->app->singleton(\Illuminate\Foundation\Console\ModelMakeCommand::class, function ($app) {
             return new \Kroderdev\LaravelMicroserviceCore\Console\ModelMakeCommand($app['files']);
@@ -75,7 +77,8 @@ class MicroserviceServiceProvider extends ServiceProvider
                 $provider,
                 $app['session.store'],
                 $app->make('request'),
-                $app->make(AuthServiceClient::class)
+                $app->make(AuthServiceClient::class),
+                $app->make(JwtValidator::class)
             );
 
             $guard->setCookieJar($app['cookie']);
