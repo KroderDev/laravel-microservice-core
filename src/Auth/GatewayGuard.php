@@ -2,21 +2,20 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Auth;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
+use Kroderdev\LaravelMicroserviceCore\Services\JwtValidator;
 
 class GatewayGuard extends SessionGuard
 {
     protected AuthServiceClient $client;
+
+    protected JwtValidator $jwtValidator;
 
     protected ?string $token = null;
 
@@ -32,10 +31,12 @@ class GatewayGuard extends SessionGuard
         UserProvider $provider,
         Session $session,
         Request $request,
-        AuthServiceClient $client
+        AuthServiceClient $client,
+        JwtValidator $jwtValidator
     ) {
         parent::__construct($name, $provider, $session, $request);
         $this->client = $client;
+        $this->jwtValidator = $jwtValidator;
         $this->userModel = config('microservice.gateway_guard.user_model', ExternalUser::class);
         $this->loadAccess = (bool) config('microservice.gateway_guard.load_access', true);
     }
@@ -81,28 +82,8 @@ class GatewayGuard extends SessionGuard
     protected function retrieveUserData(): ?array
     {
         $token = $this->token;
-        try {
-            // Attempt to get the JWT public key from cache or load it from file
-            $publicKey = Cache::remember('jwt_public_key', config('microservice.auth.jwt_cache_ttl', 3600), function () {
-                $path = config('microservice.auth.jwt_public_key');
-                Log::info('Loaded JWT public key for token validation', ['path' => $path]);
 
-                return file_get_contents($path);
-            });
-
-            // Try to decode the token to check if it's valid
-            JWT::decode($token, new Key($publicKey, config('microservice.auth.jwt_algorithm')));
-            $valid = true;
-        } catch (\Throwable $e) {
-            // Log decode failure and mark token as invalid
-            Log::warning('JWT decode failed in GatewayGuard', [
-                'error' => $e->getMessage(),
-                'token' => $token,
-            ]);
-            $valid = false;
-        }
-
-        if (! $valid) {
+        if (! $this->jwtValidator->isValid($token)) {
             try {
                 // Attempt to refresh the token using the AuthServiceClient
                 $response = $this->client->refresh($token);

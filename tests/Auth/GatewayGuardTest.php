@@ -11,6 +11,7 @@ use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
 use Kroderdev\LaravelMicroserviceCore\Auth\GatewayGuard;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
+use Kroderdev\LaravelMicroserviceCore\Services\JwtValidator;
 use Orchestra\Testbench\TestCase;
 
 class FakeAuthServiceClient extends AuthServiceClient
@@ -100,7 +101,8 @@ EOD;
                 $provider,
                 $app['session.store'],
                 $app->make('request'),
-                $app->make(AuthServiceClient::class)
+                $app->make(AuthServiceClient::class),
+                $app->make(JwtValidator::class)
             );
         });
 

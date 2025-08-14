@@ -14,6 +14,7 @@ use Kroderdev\LaravelMicroserviceCore\Http\Auth\RegisterController;
 use Kroderdev\LaravelMicroserviceCore\Http\Auth\SocialiteController;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Services\AuthServiceClient;
+use Kroderdev\LaravelMicroserviceCore\Services\JwtValidator;
 use Orchestra\Testbench\TestCase;
 
 class FakeAuthServiceClient extends AuthServiceClient
@@ -60,7 +61,8 @@ class GatewayAuthControllersTest extends TestCase
                 $provider,
                 $app['session.store'],
                 $app->make('request'),
-                $app->make(AuthServiceClient::class)
+                $app->make(AuthServiceClient::class),
+                $app->make(JwtValidator::class)
             );
         });
 
