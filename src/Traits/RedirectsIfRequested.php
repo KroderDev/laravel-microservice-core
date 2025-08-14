@@ -13,10 +13,13 @@ trait RedirectsIfRequested
     {
         if ($request->has('redirect')) {
             $redirectTo = $request->input('redirect');
+            if ($redirectTo === 'intended') {
+                return redirect()->intended();
+            }
 
-            return $redirectTo === 'intended'
-                ? redirect()->intended()
-                : redirect()->to($redirectTo);
+            if ($this->isAllowedRedirect($redirectTo)) {
+                return redirect()->to($redirectTo);
+            }
         }
 
         if (Session::has('url.intended')) {
@@ -30,5 +33,18 @@ trait RedirectsIfRequested
         }
 
         return $response;
+    }
+
+    protected function isAllowedRedirect(string $url): bool
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+
+        if (! $host) {
+            return str_starts_with($url, '/');
+        }
+
+        $allowed = Config::get('microservice.gateway_auth.allowed_redirect_hosts', []);
+
+        return in_array($host, $allowed, true);
     }
 }

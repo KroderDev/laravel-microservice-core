@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Prevent external redirects by validating `redirect` parameters against an allow list.
+
 ## [0.4.3] - 2025-08-13
 ### Fixed
 - `paginate()` returns an empty paginator with a 200 status when the gateway responds with 404.

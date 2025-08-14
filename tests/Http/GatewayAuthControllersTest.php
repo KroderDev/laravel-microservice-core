@@ -146,6 +146,24 @@ class GatewayAuthControllersTest extends TestCase
     }
 
     /** @test */
+    public function login_controller_blocks_external_redirects()
+    {
+        Config::set('microservice.gateway_auth.default_redirect', '/default');
+
+        $this->post('/login?redirect=https://evil.test', ['email' => 'foo', 'password' => 'bar'])
+            ->assertRedirect('/default');
+    }
+
+    /** @test */
+    public function login_controller_allows_redirects_to_configured_domains()
+    {
+        Config::set('microservice.gateway_auth.allowed_redirect_hosts', ['good.test']);
+
+        $this->post('/login?redirect=https://good.test/welcome', ['email' => 'foo', 'password' => 'bar'])
+            ->assertRedirect('https://good.test/welcome');
+    }
+
+    /** @test */
     public function register_controller_redirects_if_requested()
     {
         $this->post('/register?redirect=/welcome', ['email' => 'foo', 'password' => 'bar'])

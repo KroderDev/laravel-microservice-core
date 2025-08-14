@@ -166,6 +166,9 @@ return [
     */
     'gateway_auth' => [
         'default_redirect' => env('GATEWAY_AUTH_DEFAULT_REDIRECT', '/'),
+        'allowed_redirect_hosts' => array_filter(
+            explode(',', env('GATEWAY_AUTH_ALLOWED_REDIRECT_HOSTS', ''))
+        ),
     ],
 
     /*
