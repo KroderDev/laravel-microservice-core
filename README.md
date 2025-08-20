@@ -4,7 +4,7 @@
 [![Downloads](https://img.shields.io/packagist/dt/kroderdev/laravel-microservice-core.svg)](https://packagist.org/packages/kroderdev/laravel-microservice-core)
 [![License](https://img.shields.io/packagist/l/kroderdev/laravel-microservice-core.svg)](LICENSE)
 
-A toolkit that turns **Laravel 12** into a lightweight base for distributed microservices.
+A **Laravel package** that simplifies building microservices in **distributed architectures**. It provides authentication, request handling, and service-to-service communication tools to make Laravel scalable and production-ready in microservice environments.
 
 ## Key Features
 
