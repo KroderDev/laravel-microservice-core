@@ -15,7 +15,7 @@ class HealthCheckTest extends TestCase
     /** @test */
     public function health_endpoint_returns_200()
     {
-        $response = $this->get('/api/health');
+        $response = $this->get('/health');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
