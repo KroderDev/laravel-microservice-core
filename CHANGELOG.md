@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Added type hints to gateway utilities for stronger typing.
+- Sanitized JWT key logging in `GatewayGuard` to avoid exposing sensitive data.
+- Default health uri from `/api/heath` -> `/health`
+
 ### Fixed
+- Ensure API responses are checked before marking models as successful.
+- Correlation ID middleware to generate request identifiers with the config lenght.
 - Prevent external redirects by validating `redirect` parameters against an allow list.
 
 ## [0.4.3] - 2025-08-13
