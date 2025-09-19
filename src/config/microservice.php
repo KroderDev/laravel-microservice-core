@@ -121,12 +121,12 @@ return [
     | Health Endpoint
     |--------------------------------------------------------------------------
     |
-    | Enable or disable registration of the default /api/health route.
+    | Enable or disable registration of the default /health route.
     |
     */
     'health' => [
         'enabled' => env('HEALTH_ENDPOINT_ENABLED', true),
-        'path' => '/api/health',
+        'path' => '/health',
     ],
 
     /*
