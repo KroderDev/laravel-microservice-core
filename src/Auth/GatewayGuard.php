@@ -65,6 +65,9 @@ class GatewayGuard extends SessionGuard
         if ($data) {
             $model = $this->userModel;
             $user = new $model($data);
+            if (method_exists($user, 'setClaims')) {
+                $user->setClaims($data);
+            }
             if ($this->loadAccess && $user instanceof AccessUserInterface) {
                 $user->loadAccess($data['roles'] ?? [], $data['permissions'] ?? []);
             }
@@ -157,6 +160,9 @@ class GatewayGuard extends SessionGuard
         $userData = $response['user'] ?? $this->client->me($token);
         $model = $this->userModel;
         $user = new $model($userData);
+        if (method_exists($user, 'setClaims')) {
+            $user->setClaims($userData);
+        }
         if ($this->loadAccess && $user instanceof AccessUserInterface) {
             $user->loadAccess($userData['roles'] ?? [], $userData['permissions'] ?? []);
         }
@@ -182,6 +188,10 @@ class GatewayGuard extends SessionGuard
 
         $model = $this->userModel;
         $user = new $model($userData);
+
+        if (method_exists($user, 'setClaims')) {
+            $user->setClaims($userData);
+        }
 
         if ($this->loadAccess && $user instanceof AccessUserInterface) {
             $user->loadAccess($userData['roles'] ?? [], $userData['permissions'] ?? []);

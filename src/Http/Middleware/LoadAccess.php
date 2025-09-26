@@ -33,6 +33,15 @@ class LoadAccess
         }
 
         if ($user instanceof AccessUserInterface) {
+            $oidcConfig = config('microservice.auth.oidc', []);
+            $preferGateway = (bool) ($oidcConfig['prefer_gateway_permissions'] ?? false);
+
+            if (($oidcConfig['enabled'] ?? false) && ! $preferGateway) {
+                if (! empty($user->getRoleNames()) || ! empty($user->getPermissions())) {
+                    return $next($request);
+                }
+            }
+
             try {
                 $access = app(PermissionsClient::class)->getAccessFor($user);
                 $user->loadAccess(

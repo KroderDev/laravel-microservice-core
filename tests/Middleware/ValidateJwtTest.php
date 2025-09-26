@@ -70,6 +70,16 @@ EOD;
         Route::middleware([ValidateJwt::class, LoadAccess::class, 'permission:view.dashboard'])->get('/secured-with-permissions', fn () => response()->json(['ok' => true]));
         // Secured with permissions route
         Route::middleware([ValidateJwt::class, LoadAccess::class, 'permission:place.order'])->get('/secured-with-permissions-2', fn () => response()->json(['ok' => true]));
+        // Route for inspecting claims extracted from the token
+        Route::middleware(ValidateJwt::class)->get('/oidc-claims', function () {
+            $user = auth()->user();
+
+            return response()->json([
+                'id' => $user?->getAuthIdentifier(),
+                'roles' => $user?->getRoleNames(),
+                'permissions' => $user?->getPermissions(),
+            ]);
+        });
     }
 
     protected function tearDown(): void
@@ -172,5 +182,36 @@ EOD;
         $response->assertJson(['ok' => true]);
 
         unlink(__DIR__.'/tmp_public.pem');
+    }
+
+    /** @test */
+    public function test_extracts_oidc_roles_and_permissions()
+    {
+        config()->set('microservice.auth.user_identifier_claim', 'sub');
+        config()->set('microservice.auth.oidc.enabled', true);
+        config()->set('microservice.auth.oidc.client_id', 'bff');
+        config()->set('microservice.auth.oidc.map_primary_roles_to_permissions', false);
+
+        $payload = [
+            'sub' => 'kc-user-123',
+            'exp' => time() + 60,
+            'realm_access' => ['roles' => ['realm-admin']],
+            'resource_access' => [
+                'bff' => ['roles' => ['view-dashboard', 'place-order']],
+            ],
+        ];
+
+        $jwt = JWT::encode($payload, $this->privateKey, 'RS256');
+
+        $response = $this->get('/oidc-claims', [
+            'Authorization' => "Bearer $jwt",
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'id' => 'kc-user-123',
+            'roles' => ['realm-admin'],
+            'permissions' => ['view-dashboard', 'place-order'],
+        ]);
     }
 }

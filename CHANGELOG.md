@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- JWKS support and configurable claim mapping for OpenID Connect-issued JWTs (Keycloak-ready).
+- New configuration toggles to align `ExternalUser` identifiers and reuse token roles/permissions without gateway calls.
+- PHPUnit coverage for the JWT middleware and JWKS validator.
+
 ### Changed
 - Added type hints to gateway utilities for stronger typing.
 - Sanitized JWT key logging in `GatewayGuard` to avoid exposing sensitive data.

@@ -42,3 +42,11 @@ This repository contains the core package for building microservices using Larav
 - Keep pull requests small and focused to ease review.
 - Prefer expressive naming and add comments where logic is complex.
 - Any new feature should include corresponding tests.
+
+## OIDC Integration (Keycloak-ready)
+
+- Tokens issued by any OpenID Connect provider can be validated via JWKS by setting `OIDC_ENABLED=true` and `OIDC_JWKS_URL` to the JWKS endpoint (for Keycloak: `/realms/{realm}/protocol/openid-connect/certs`). When JWKS is configured, `JWT_PUBLIC_KEY_PATH` becomes optional.
+- Map the authenticated user's identifier with `JWT_USER_IDENTIFIER_CLAIM` (defaults to `id`; set to `sub` when mirroring Keycloak) so permission lookups use the desired claim.
+- Use `OIDC_CLIENT_ID` to limit permission extraction to a specific client application. Override claim paths with `OIDC_CLIENT_ROLES_CLAIM`, `OIDC_PRIMARY_ROLES_CLAIM`, `JWT_ROLES_CLAIM`, or `JWT_PERMISSIONS_CLAIM` when the token payload is customized.
+- Disable redundant gateway lookups when roles and permissions are already embedded in the token by leaving `OIDC_PREFER_GATEWAY_PERMISSIONS=false`; set it to `true` if the gateway remains the authority.
+- Always run `composer test` after updating authentication flows—new coverage exists for the JWT middleware and JWKS resolver.

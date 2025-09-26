@@ -67,6 +67,49 @@ return [
          * The prefix expected before the JWT token in the header (e.g., "Bearer").
          */
         'prefix' => 'Bearer',
+
+        /**
+         * JWT User Identifier Claim:
+         * Determines which claim should be used as the unique identifier for the
+         * authenticated user. Defaults to "id" for backwards compatibility. Set
+         * to "sub" (or any other claim) when mirroring OpenID Connect providers
+         * such as Keycloak.
+         */
+        'user_identifier_claim' => env('JWT_USER_IDENTIFIER_CLAIM', 'id'),
+
+        /**
+         * JWT Roles Claim:
+         * Optional dot-notation path to the claim that contains role names.
+         * When null, sensible defaults or provider-specific mappings are used.
+         */
+        'roles_claim' => env('JWT_ROLES_CLAIM'),
+
+        /**
+         * JWT Permissions Claim:
+         * Optional dot-notation path to the claim that contains permission
+         * names. When null, the middleware falls back to provider-specific
+         * mappings.
+         */
+        'permissions_claim' => env('JWT_PERMISSIONS_CLAIM'),
+
+        /**
+         * OpenID Connect Integration Options:
+         * Enable JWKS support and claim mappings when validating tokens issued
+         * by providers such as Keycloak. The JWKS URL is recommended to
+         * automatically handle key rotation. client_roles_claim accepts
+         * placeholders ("%s" or "{client}") that will be replaced with the
+         * configured client_id.
+         */
+        'oidc' => [
+            'enabled' => env('OIDC_ENABLED', false),
+            'jwks_url' => env('OIDC_JWKS_URL'),
+            'client_id' => env('OIDC_CLIENT_ID'),
+            'primary_roles_claim' => env('OIDC_PRIMARY_ROLES_CLAIM', 'realm_access.roles'),
+            'client_roles_claim' => env('OIDC_CLIENT_ROLES_CLAIM', 'resource_access.{client}.roles'),
+            'map_client_roles_to_permissions' => env('OIDC_MAP_CLIENT_ROLES_TO_PERMISSIONS', true),
+            'map_primary_roles_to_permissions' => env('OIDC_MAP_PRIMARY_ROLES_TO_PERMISSIONS', false),
+            'prefer_gateway_permissions' => env('OIDC_PREFER_GATEWAY_PERMISSIONS', false),
+        ],
     ],
 
     /*
