@@ -14,8 +14,8 @@ class CorrelationIdTest extends TestCase
     {
         $header = 'X-Correlation-ID';
         $length = 36;
-        config()->set('microservice.correlation.header', $header);
-        config()->set('microservice.correlation.length', $length);
+        config()->set('microservice.tracing.correlation.header', $header);
+        config()->set('microservice.tracing.correlation.length', $length);
 
         Route::middleware(CorrelationId::class)->get('/correlation-default', fn () => response()->json(['ok' => true]));
 
@@ -29,8 +29,8 @@ class CorrelationIdTest extends TestCase
     {
         $header = 'X-Correlation-ID';
         $length = 20;
-        config()->set('microservice.correlation.header', $header);
-        config()->set('microservice.correlation.length', $length);
+        config()->set('microservice.tracing.correlation.header', $header);
+        config()->set('microservice.tracing.correlation.length', $length);
 
         Route::middleware(CorrelationId::class)->get('/correlation-custom', fn () => response()->json(['ok' => true]));
 

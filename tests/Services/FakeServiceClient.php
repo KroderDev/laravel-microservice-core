@@ -2,9 +2,9 @@
 
 namespace Tests\Services;
 
-use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Contracts\ServiceClientInterface;
 
-class FakeGatewayClient implements ApiGatewayClientInterface
+class FakeServiceClient implements ServiceClientInterface
 {
     protected array $calls = [];
 

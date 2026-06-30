@@ -5,13 +5,13 @@ namespace Tests\Middleware;
 use PHPUnit\Framework\Attributes\Test;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Route;
-use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Contracts\ServiceClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Orchestra\Testbench\TestCase;
-use Tests\Services\FakeGatewayClient;
+use Tests\Services\FakeServiceClient;
 
 class ValidateJwtTest extends TestCase
 {
@@ -25,7 +25,7 @@ class ValidateJwtTest extends TestCase
     {
         parent::setUp();
 
-        $this->app->bind(ApiGatewayClientInterface::class, fn () => new FakeGatewayClient());
+        $this->app->bind(ServiceClientInterface::class, fn () => new FakeServiceClient());
 
         $this->app['router']->aliasMiddleware('permission', PermissionMiddleware::class);
 

@@ -16,8 +16,10 @@ class HttpMacrosTest extends TestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('microservice.api_gateway.url', 'http://gateway.test');
-        $app['config']->set('microservice.correlation.header', 'X-Correlation-ID');
+        $app['config']->set('microservice.services.registry.gateway.url', 'http://gateway.test');
+        $app['config']->set('microservice.services.registry.gateway.timeout', 5);
+        $app['config']->set('microservice.services.registry.gateway.retries', 2);
+        $app['config']->set('microservice.tracing.correlation.header', 'X-Correlation-ID');
     }
 
     #[Test]
@@ -26,7 +28,7 @@ class HttpMacrosTest extends TestCase
         Http::fake();
 
         Route::get('/macro', function () {
-            Http::apiGateway()->get('/foo');
+            Http::service('gateway')->get('/foo');
 
             return response()->json(['ok' => true]);
         });
@@ -43,7 +45,7 @@ class HttpMacrosTest extends TestCase
     {
         Http::fake();
 
-        Http::apiGateway()->get('/foo');
+        Http::service('gateway')->get('/foo');
 
         Http::assertSent(function ($request) {
             return ! $request->hasHeader('X-Correlation-ID');

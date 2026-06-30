@@ -7,10 +7,10 @@ use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
-use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
+use Kroderdev\LaravelMicroserviceCore\Services\ServiceClient;
 use Orchestra\Testbench\TestCase;
 
-class ApiGatewayErrorTest extends TestCase
+class ServiceClientErrorTest extends TestCase
 {
     protected function getPackageProviders($app)
     {
@@ -22,7 +22,7 @@ class ApiGatewayErrorTest extends TestCase
         parent::setUp();
 
         Route::get('/gateway-error', function () {
-            return app(ApiGatewayClient::class)->get('/fail');
+            return app(ServiceClient::class)->get('/fail');
         });
     }
 

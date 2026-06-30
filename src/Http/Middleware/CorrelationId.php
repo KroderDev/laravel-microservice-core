@@ -17,8 +17,8 @@ class CorrelationId
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $cfg = config('microservice.correlation');
-        $header = $cfg['header'];
+        $cfg = config('microservice.tracing.correlation');
+        $header = $cfg['header'] ?? 'X-Correlation-ID';
         $length = (int) ($cfg['length'] ?? 36);
 
         // Use existing header or generate a new ID of the configured length
