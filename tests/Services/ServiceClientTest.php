@@ -5,10 +5,10 @@ namespace Tests\Services;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Http;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
-use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
+use Kroderdev\LaravelMicroserviceCore\Services\ServiceClient;
 use Orchestra\Testbench\TestCase;
 
-class ApiGatewayClientTest extends TestCase
+class ServiceClientTest extends TestCase
 {
     protected function getPackageProviders($app)
     {
@@ -19,7 +19,7 @@ class ApiGatewayClientTest extends TestCase
     public function post_sends_data_to_gateway()
     {
         Http::fake();
-        app(ApiGatewayClient::class)->post('/items', ['name' => 'foo']);
+        app(ServiceClient::class)->post('/items', ['name' => 'foo']);
 
         Http::assertSent(function ($request) {
             return $request->method() === 'POST'
@@ -32,7 +32,7 @@ class ApiGatewayClientTest extends TestCase
     public function put_sends_data_to_gateway()
     {
         Http::fake();
-        app(ApiGatewayClient::class)->put('/items/1', ['name' => 'bar']);
+        app(ServiceClient::class)->put('/items/1', ['name' => 'bar']);
 
         Http::assertSent(function ($request) {
             return $request->method() === 'PUT'

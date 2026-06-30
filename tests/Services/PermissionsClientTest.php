@@ -6,12 +6,12 @@ use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Cache;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
-use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Contracts\ServiceClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Kroderdev\LaravelMicroserviceCore\Traits\HasAccess;
 use Orchestra\Testbench\TestCase;
 
-require_once __DIR__.'/FakeGatewayClient.php';
+require_once __DIR__.'/FakeServiceClient.php';
 
 class DummyUser extends User implements AccessUserInterface
 {
@@ -22,12 +22,12 @@ class DummyUser extends User implements AccessUserInterface
 
 class PermissionsClientTest extends TestCase
 {
-    protected FakeGatewayClient $gateway;
+    protected FakeServiceClient $gateway;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->gateway = new class () extends FakeGatewayClient {
+        $this->gateway = new class () extends FakeServiceClient {
             public function get(string $uri, array $query = []): mixed
             {
                 parent::get($uri, $query);
@@ -45,7 +45,7 @@ class PermissionsClientTest extends TestCase
                 };
             }
         };
-        $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
+        $this->app->bind(ServiceClientInterface::class, fn () => $this->gateway);
         Cache::flush();
         $this->app['config']->set('microservice.permissions_endpoint', '/permissions');
     }
@@ -58,7 +58,7 @@ class PermissionsClientTest extends TestCase
     #[Test]
     public function retrieves_access_for_any_user_model()
     {
-        $client = new PermissionsClient($this->app->make(ApiGatewayClientInterface::class));
+        $client = new PermissionsClient($this->app->make(ServiceClientInterface::class));
         $user = new DummyUser(['id' => 5]);
 
         $access = $client->getAccessFor($user);
