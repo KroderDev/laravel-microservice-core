@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/KroderDev/laravel-microservice-core/compare/v0.5.1...v0.6.0) (2026-06-30)
+
+
+### Features
+
+* **resilience:** add circuit breaker, exponential backoff, and retry strategy ([0474b73](https://github.com/KroderDev/laravel-microservice-core/commit/0474b73ed6bd980420edbcef0fb7ff9a3077a10d))
+
+
+### Documentation
+
+* update README and add ROADMAP ([e9d09b1](https://github.com/KroderDev/laravel-microservice-core/commit/e9d09b1c6c6a30d02dc36c77b4fb7ce5d0e348db))
+
+
+### Code Refactoring
+
+* clean up service provider for distributed architecture ([ae5416a](https://github.com/KroderDev/laravel-microservice-core/commit/ae5416a415f9aef83e5267f0aefae4f746c23845))
+* distributed architecture toolkit scope reduction ([6a38d28](https://github.com/KroderDev/laravel-microservice-core/commit/6a38d28c37e65fe039d0f9301191867537ae98e9))
+* multi-service HTTP client ([1e0f249](https://github.com/KroderDev/laravel-microservice-core/commit/1e0f24963f90c8d1d347ccb93d27e24fefae1d28))
+* restructure config for distributed services ([4ad8bdf](https://github.com/KroderDev/laravel-microservice-core/commit/4ad8bdfe14d9e7c66b95e4b37fbbf82317c14a6f))
+
+
+### Tests
+
+* remove and update tests for new architecture ([6bfe8f9](https://github.com/KroderDev/laravel-microservice-core/commit/6bfe8f971d3431ef6513e458e36e905a87c02820))
+
+
+### Continuous Integration
+
+* add GitHub Actions workflow for labeling PRs ([fac7cef](https://github.com/KroderDev/laravel-microservice-core/commit/fac7ceff37a5525020873c756ae27fd86f4bbb5e))
+* add GitHub Actions workflow to summarize new issues ([93616c1](https://github.com/KroderDev/laravel-microservice-core/commit/93616c1ce715fe82618b431d3556b80c4f1c4bb7))
+* add labeler configuration for PR auto-labeling ([3634553](https://github.com/KroderDev/laravel-microservice-core/commit/3634553a0edf07281ffc4d4ecd4f943ee976c955))
+* add publish workflow and improve release-please with validation ([9def293](https://github.com/KroderDev/laravel-microservice-core/commit/9def2932547914db4cc910ba283f999521368760))
+* configure release-please with manifest and expanded changelog sections ([8192679](https://github.com/KroderDev/laravel-microservice-core/commit/81926798095a60e563f8663181970733614dab98))
+
+
+### Miscellaneous Chores
+
+* update package description to reflect current features ([c14e3e7](https://github.com/KroderDev/laravel-microservice-core/commit/c14e3e794a473381de7b7093a4d11ba1048d6b70))
+
 ## [0.5.1](https://github.com/KroderDev/laravel-microservice-core/compare/v0.5.0...v0.5.1) (2026-06-30)
 
 
