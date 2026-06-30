@@ -1,0 +1,43 @@
+auth:
+  - src/Auth/**/*
+
+http:
+  - src/Http/**/*
+
+resilience:
+  - src/Resilience/**/*
+
+services:
+  - src/Services/**/*
+
+providers:
+  - src/Providers/**/*
+
+contracts:
+  - src/Contracts/**/*
+
+exceptions:
+  - src/Exceptions/**/*
+
+traits:
+  - src/Traits/**/*
+
+config:
+  - src/config/**/*
+
+tests:
+  - tests/**/*
+
+dependencies:
+  - composer.json
+  - composer.lock
+
+ci:
+  - .github/**/*
+
+documentation:
+  - README.md
+  - CHANGELOG.md
+  - CONTRIBUTING.md
+  - AGENTS.md
+  - ROADMAP.md
