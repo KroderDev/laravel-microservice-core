@@ -13,7 +13,36 @@ name: release-please
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+  validate-release:
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    needs: release-please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: Validate tag
+        run: |
+          git fetch --tags origin
+          git checkout tags/${{ needs.release-please.outputs.tag_name }}
+          composer validate --strict
+
+      - name: Verify version
+        run: |
+          VERSION="${{ needs.release-please.outputs.version }}"
+          echo "Release $VERSION validated successfully"

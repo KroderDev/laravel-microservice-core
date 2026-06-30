@@ -1,0 +1,30 @@
+name: Publish to GitHub Packages
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: Validate release
+        run: composer validate --strict
+
+      - name: Build distribution archive
+        run: tar czf laravel-microservice-core-${{ github.ref_name }}.tar.gz src/ composer.json LICENSE README.md
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: laravel-microservice-core-${{ github.ref_name }}.tar.gz
