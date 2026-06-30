@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1](https://github.com/KroderDev/laravel-microservice-core/compare/v0.5.0...v0.5.1) (2026-06-30)
+
+
+### Bug Fixes
+
+* drop PHP 8.2 from matrix, update lock for 8.3 compat, fix test ([d711dfd](https://github.com/KroderDev/laravel-microservice-core/commit/d711dfda233541170f3f481229be567684edde3b))
+* handle confirm prompt in make:model test for Laravel 12 compatibility ([d1111a1](https://github.com/KroderDev/laravel-microservice-core/commit/d1111a1aa176a15578b32bb574e2dfeb18cfd8ff))
+
+
+### Miscellaneous Chores
+
+* add Makefile and docker-compose.yml for local dev environment ([862bfea](https://github.com/KroderDev/laravel-microservice-core/commit/862bfea334585dea99b33717b164701ee15a0e73))
+* **deps:** update composer dependencies ([b8a5721](https://github.com/KroderDev/laravel-microservice-core/commit/b8a572106b72b251089c7f610a711f2642b6e779))
+* **deps:** update PHP dependencies ([744fbd8](https://github.com/KroderDev/laravel-microservice-core/commit/744fbd8598bc32ab900294df4044500aa99c6874))
+
 ## [0.5.0] - 2025-09-22
 
 ### Added
