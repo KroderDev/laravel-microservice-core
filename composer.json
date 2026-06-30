@@ -1,6 +1,6 @@
 {
     "name": "kroderdev/laravel-microservice-core",
-    "description": "A toolkit to use Laravel effectively as a microservice in a distributed architecture.",
+    "description": "Laravel package providing JWT authentication, RBAC, distributed tracing, and multi-service HTTP client for microservice architectures.",
     "type": "library",
     "require": {
         "php": ">=8.2",
