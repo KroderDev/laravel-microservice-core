@@ -12,11 +12,39 @@ return [
     |
     */
     'middleware_aliases' => [
-        'jwt_auth' => 'jwt.auth',         // e.g. 'jwt.auth' or null
-        'correlation_id' => 'correlation.id',   // e.g. 'correlation.id' or ''
+        'jwt_auth' => 'jwt.auth',
+        'correlation_id' => 'correlation.id',
         'load_access' => 'load.access',
         'role' => 'role',
         'permission' => 'permission',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Service Registry
+    |--------------------------------------------------------------------------
+    |
+    | Define all services your application communicates with. Each entry
+    | specifies the base URL, timeout, and retry behavior. The "gateway"
+    | entry provides backward compatibility for the centralized API gateway
+    | pattern, but services can also communicate directly with each other.
+    |
+    | Use the Http::service('name') macro or ServiceClient::to('name')
+    | factory to resolve a service at runtime.
+    |
+    */
+    'services' => [
+        'default' => env('DEFAULT_SERVICE_URL', env('API_GATEWAY_URL', 'http://gateway.local')),
+
+        'registry' => [
+
+            'gateway' => [
+                'url' => env('API_GATEWAY_URL', 'http://gateway.local'),
+                'timeout' => 5,
+                'retries' => 2,
+            ],
+
+        ],
     ],
 
     /*
@@ -114,49 +142,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Correlation ID Options
+    | Tracing Configuration
     |--------------------------------------------------------------------------
     |
-    | Configuration settings related to the propagation of correlation IDs.
-    |
-    | These settings determine how correlation IDs are managed and passed between
-    | different services or components within the microservice architecture.
-    | Proper configuration ensures traceability and consistency for distributed requests.
+    | Configuration for distributed request tracing. Supports correlation IDs
+    | today, with planned support for W3C Trace Context and OpenTelemetry.
     |
     */
-    'correlation' => [
-        /**
-         * The name of the HTTP header used to transmit the correlation ID for request tracing.
-         * This value is used to track and correlate requests across microservices.
-         *
-         * @var string
-         */
-        'header' => 'X-Correlation-ID',
-        /**
-         * The length of the value, used for UUIDs or unique identifiers.
-         * Default is 36 characters, which matches the standard UUID string length.
-         *
-         * @var int
-         */
-        'length' => 36,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | API Gateway Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Specifies the base URL of the API Gateway service through which all
-    | microservice communication may be routed.
-    */
-    'api_gateway' => [
+    'tracing' => [
 
         /**
-         * API Gateway URL:
-         * Base URL of the API Gateway. Can be customized via environment
-         * variable for flexibility across different environments.
+         * Tracing driver: "correlation_id", "w3c", "otel", or "none".
+         * Future releases will add W3C Trace Context and OpenTelemetry support.
          */
-        'url' => env('API_GATEWAY_URL', 'http://gateway.local'),
+        'driver' => env('TRACING_DRIVER', 'correlation_id'),
+
+        'correlation' => [
+            /**
+             * The name of the HTTP header used to transmit the correlation ID for request tracing.
+             */
+            'header' => 'X-Correlation-ID',
+
+            /**
+             * The length of the correlation ID value.
+             * Default is 36 characters, matching the standard UUID string length.
+             */
+            'length' => 36,
+        ],
     ],
 
     /*
@@ -184,46 +196,4 @@ return [
     'permissions_cache_ttl' => env('PERMISSIONS_CACHE_TTL', 60),
     'permissions_endpoint' => env('PERMISSIONS_ENDPOINT', '/auth/permissions'),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Gateway Guard Options
-    |--------------------------------------------------------------------------
-    |
-    | Configure the session-based gateway guard for front-end applications.
-    */
-    'gateway_guard' => [
-        'user_model' => \Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser::class,
-        'load_access' => true,
-        'me_cache_ttl' => env('GATEWAY_ME_CACHE_TTL', 300),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Gateway Auth Controllers
-    |--------------------------------------------------------------------------
-    |
-    | Configuration specific to the built-in authentication controllers.
-    | The default_redirect value determines where the user is sent if no
-    | redirect parameter or intended URL exists and the request does not
-    | expect JSON.
-    */
-    'gateway_auth' => [
-        'default_redirect' => env('GATEWAY_AUTH_DEFAULT_REDIRECT', '/'),
-        'allowed_redirect_hosts' => array_filter(
-            explode(',', env('GATEWAY_AUTH_ALLOWED_REDIRECT_HOSTS', ''))
-        ),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Model HTTP Methods
-    |--------------------------------------------------------------------------
-    |
-    | Configure which HTTP verbs are used when models are updated or deleted
-    | through the API gateway. Defaults align with Laravel's expectations.
-    */
-    'models' => [
-        'update_method' => env('MODEL_UPDATE_METHOD', 'put'),
-        'delete_method' => env('MODEL_DELETE_METHOD', 'delete'),
-    ],
 ];
