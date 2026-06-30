@@ -16,6 +16,7 @@ class MakeModelCommandTest extends TestCase
     public function test_generates_remote_model()
     {
         $this->artisan('make:model', ['name' => 'RemoteUser', '--remote' => true])
+            ->expectsQuestion('Do you want to generate additional components for the model?', 'no')
             ->assertExitCode(0);
 
         $path = app_path('Models/RemoteUser.php');
