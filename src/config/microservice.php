@@ -36,12 +36,58 @@ return [
     'services' => [
         'default' => env('DEFAULT_SERVICE_URL', env('API_GATEWAY_URL', 'http://gateway.local')),
 
+        /*
+        |------------------------------------------------------------------
+        | Circuit Breaker Defaults
+        |------------------------------------------------------------------
+        |
+        | Default values for circuit breaker behavior. These are applied
+        | to every service unless overridden in the service's own
+        | "circuit_breaker" block. Set "enabled" to true to opt in.
+        |
+        */
+        'circuit_breaker_defaults' => [
+            'enabled' => false,
+            'failure_threshold' => 5,
+            'half_open_after' => 30,
+            'success_threshold' => 2,
+        ],
+
+        /*
+        |------------------------------------------------------------------
+        | Retry Strategy Defaults
+        |------------------------------------------------------------------
+        |
+        | Default retry configuration. When a service does not define its
+        | own "retry_strategy" block these defaults are used. "fixed"
+        | backoff with base_delay=100 mirrors the legacy retry behavior.
+        |
+        */
+        'retry_strategy_defaults' => [
+            'backoff' => 'exponential',
+            'base_delay' => 100,
+            'max_delay' => 5000,
+            'jitter' => true,
+        ],
+
         'registry' => [
 
             'gateway' => [
                 'url' => env('API_GATEWAY_URL', 'http://gateway.local'),
                 'timeout' => 5,
                 'retries' => 2,
+                'circuit_breaker' => [
+                    'enabled' => false,
+                    'failure_threshold' => 5,
+                    'half_open_after' => 30,
+                    'success_threshold' => 2,
+                ],
+                'retry_strategy' => [
+                    'backoff' => 'exponential',
+                    'base_delay' => 100,
+                    'max_delay' => 5000,
+                    'jitter' => true,
+                ],
             ],
 
         ],

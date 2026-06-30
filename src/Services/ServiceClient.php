@@ -2,10 +2,13 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Services;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ServiceClientInterface;
 use Kroderdev\LaravelMicroserviceCore\Exceptions\ServiceClientException;
+use Kroderdev\LaravelMicroserviceCore\Resilience\CircuitBreaker;
+use Kroderdev\LaravelMicroserviceCore\Resilience\CircuitBreakerManager;
 
 class ServiceClient implements ServiceClientInterface
 {
@@ -15,10 +18,16 @@ class ServiceClient implements ServiceClientInterface
 
     protected ?string $token = null;
 
+    protected ?CircuitBreaker $circuitBreaker = null;
+
     protected function __construct(string $serviceName, PendingRequest $http)
     {
         $this->serviceName = $serviceName;
         $this->http = $http;
+
+        if (app()->has(CircuitBreakerManager::class)) {
+            $this->circuitBreaker = app(CircuitBreakerManager::class)->for($serviceName);
+        }
     }
 
     public static function to(string $serviceName): static
@@ -63,30 +72,47 @@ class ServiceClient implements ServiceClientInterface
 
     public function get(string $uri, array $query = []): mixed
     {
-        return $this->handleResponse(
-            $this->http->get($uri, $query)
-        );
+        return $this->send(fn () => $this->http->get($uri, $query));
     }
 
     public function post(string $uri, array $data = []): mixed
     {
-        return $this->handleResponse(
-            $this->http->post($uri, $data)
-        );
+        return $this->send(fn () => $this->http->post($uri, $data));
     }
 
     public function put(string $uri, array $data = []): mixed
     {
-        return $this->handleResponse(
-            $this->http->put($uri, $data)
-        );
+        return $this->send(fn () => $this->http->put($uri, $data));
     }
 
     public function delete(string $uri): mixed
     {
-        return $this->handleResponse(
-            $this->http->delete($uri)
-        );
+        return $this->send(fn () => $this->http->delete($uri));
+    }
+
+    protected function send(callable $action): mixed
+    {
+        $this->circuitBreaker?->check();
+
+        try {
+            $response = $action();
+
+            $result = $this->handleResponse($response);
+
+            $this->circuitBreaker?->recordSuccess();
+
+            return $result;
+        } catch (ServiceClientException $e) {
+            if ($e->getStatusCode() >= 500) {
+                $this->circuitBreaker?->recordFailure();
+            }
+
+            throw $e;
+        } catch (ConnectionException $e) {
+            $this->circuitBreaker?->recordFailure();
+
+            throw new ServiceClientException(503, [], $e->getMessage(), $e);
+        }
     }
 
     protected function handleResponse(mixed $response): mixed

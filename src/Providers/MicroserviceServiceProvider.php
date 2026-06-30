@@ -16,6 +16,9 @@ use Kroderdev\LaravelMicroserviceCore\Http\Middleware\LoadAccess;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\RoleMiddleware;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\ValidateJwt;
+use Kroderdev\LaravelMicroserviceCore\Exceptions\CircuitBreakerOpenException;
+use Kroderdev\LaravelMicroserviceCore\Resilience\CircuitBreakerManager;
+use Kroderdev\LaravelMicroserviceCore\Resilience\RetryStrategy;
 use Kroderdev\LaravelMicroserviceCore\Services\JwtValidator;
 use Kroderdev\LaravelMicroserviceCore\Services\PermissionsClient;
 use Kroderdev\LaravelMicroserviceCore\Services\ServiceClient;
@@ -35,6 +38,7 @@ class MicroserviceServiceProvider extends ServiceProvider
         $this->app->bind(ServiceClientInterface::class, fn ($app) => $app->make(ServiceClientFactory::class)->default());
         $this->app->scoped(PermissionsClient::class, fn ($app) => new PermissionsClient($app->make(ServiceClientInterface::class)));
         $this->app->singleton(JwtValidator::class, fn () => new JwtValidator());
+        $this->app->singleton(CircuitBreakerManager::class, fn ($app) => new CircuitBreakerManager($app['cache']->store()));
     }
 
     public function boot(Router $router): void
@@ -109,6 +113,14 @@ class MicroserviceServiceProvider extends ServiceProvider
 
                 return response()->json(['error' => $message], $status);
             });
+
+            $handler->renderable(function (CircuitBreakerOpenException $e, $request) {
+                if (! $request->expectsJson()) {
+                    abort(503, $e->getMessage());
+                }
+
+                return response()->json(['error' => $e->getMessage()], 503);
+            });
         }
     }
 
@@ -121,12 +133,16 @@ class MicroserviceServiceProvider extends ServiceProvider
             $retries = $config['retries'] ?? 2;
             $correlationHeader = config('microservice.tracing.correlation.header', 'X-Correlation-ID');
             $correlation = app()->bound('request') ? request()->header($correlationHeader) : null;
+            $retryConfig = array_merge(
+                config('microservice.services.retry_strategy_defaults', []),
+                $config['retry_strategy'] ?? []
+            );
 
             return Http::acceptJson()
                 ->withHeaders($correlation ? [$correlationHeader => $correlation] : [])
                 ->baseUrl($url)
                 ->timeout($timeout)
-                ->retry($retries, 100, throw: false);
+                ->retry($retries, RetryStrategy::create($retryConfig), throw: false);
         });
 
         Http::macro('serviceDirect', function (string $name = 'gateway') {
@@ -149,13 +165,17 @@ class MicroserviceServiceProvider extends ServiceProvider
             $retries = $config['retries'] ?? 2;
             $correlationHeader = config('microservice.tracing.correlation.header', 'X-Correlation-ID');
             $correlation = app()->bound('request') ? request()->header($correlationHeader) : null;
+            $retryConfig = array_merge(
+                config('microservice.services.retry_strategy_defaults', []),
+                $config['retry_strategy'] ?? []
+            );
 
             return Http::acceptJson()
                 ->withToken($token)
                 ->withHeaders($correlation ? [$correlationHeader => $correlation] : [])
                 ->baseUrl($url)
                 ->timeout($timeout)
-                ->retry($retries, 100, throw: false);
+                ->retry($retries, RetryStrategy::create($retryConfig), throw: false);
         });
 
         Http::macro('serviceDirectWithToken', function (string $name, string $token) {
