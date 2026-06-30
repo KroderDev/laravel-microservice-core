@@ -2,7 +2,7 @@
 
 namespace Kroderdev\LaravelMicroserviceCore\Contracts;
 
-interface ApiGatewayClientInterface
+interface ServiceClientInterface
 {
     public function get(string $uri, array $query = []): mixed;
 

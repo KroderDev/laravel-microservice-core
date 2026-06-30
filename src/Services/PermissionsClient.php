@@ -4,15 +4,15 @@ namespace Kroderdev\LaravelMicroserviceCore\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
-use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Contracts\ServiceClientInterface;
 
 class PermissionsClient
 {
-    protected ApiGatewayClientInterface $gateway;
+    protected ServiceClientInterface $gateway;
 
     protected string $endpoint;
 
-    public function __construct(ApiGatewayClientInterface $gateway)
+    public function __construct(ServiceClientInterface $gateway)
     {
         $this->gateway = $gateway;
         $this->endpoint = rtrim(config('microservice.permissions_endpoint', '/auth/permissions'), '/');

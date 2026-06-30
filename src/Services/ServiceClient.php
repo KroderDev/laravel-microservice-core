@@ -4,10 +4,10 @@ namespace Kroderdev\LaravelMicroserviceCore\Services;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
-use Kroderdev\LaravelMicroserviceCore\Exceptions\ApiGatewayException;
+use Kroderdev\LaravelMicroserviceCore\Contracts\ServiceClientInterface;
+use Kroderdev\LaravelMicroserviceCore\Exceptions\ServiceClientException;
 
-class ApiGatewayClient implements ApiGatewayClientInterface
+class ServiceClient implements ServiceClientInterface
 {
     protected PendingRequest $http;
 
@@ -16,24 +16,39 @@ class ApiGatewayClient implements ApiGatewayClientInterface
         $this->http = $http;
     }
 
-    public static function make(): static
+    public static function to(string $serviceName): static
     {
-        return new static(Http::apiGateway());
+        return new static(Http::service($serviceName));
     }
 
-    public static function direct(): static
+    public static function toGateway(): static
     {
-        return new static(Http::apiGatewayDirect());
+        return static::to('gateway');
     }
 
-    public static function withToken(string $token): static
+    public static function direct(string $serviceName): static
     {
-        return new static(Http::apiGatewayWithToken($token));
+        return new static(Http::serviceDirect($serviceName));
     }
 
-    public static function directWithToken(string $token): static
+    public function withToken(string $token): static
     {
-        return new static(Http::apiGatewayDirectWithToken($token));
+        $header = config('microservice.tracing.correlation.header', 'X-Correlation-ID');
+        $correlation = app()->bound('request') ? request()->header($header) : null;
+
+        $this->http = $this->http->withToken($token)
+            ->withHeaders($correlation ? [$header => $correlation] : []);
+
+        return $this;
+    }
+
+    public function withoutRetry(): static
+    {
+        $this->http = Http::serviceDirect(
+            $this->resolveServiceNameFromPendingRequest($this->http)
+        );
+
+        return $this;
     }
 
     public function get(string $uri, array $query = []): mixed
@@ -74,7 +89,7 @@ class ApiGatewayClient implements ApiGatewayClientInterface
                 $message = $data['message'] ?? ($data['error'] ?? '');
             }
 
-            throw new ApiGatewayException(
+            throw new ServiceClientException(
                 method_exists($response, 'status') ? $response->status() : 500,
                 is_array($data) ? $data : [],
                 $message
@@ -86,5 +101,10 @@ class ApiGatewayClient implements ApiGatewayClientInterface
         }
 
         return $response;
+    }
+
+    protected function resolveServiceNameFromPendingRequest(PendingRequest $http): string
+    {
+        return 'gateway';
     }
 }
