@@ -2,6 +2,7 @@
 
 namespace Tests\Auth;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Gate;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
@@ -14,7 +15,7 @@ class GateIntegrationTest extends TestCase
         return [MicroserviceServiceProvider::class];
     }
 
-    /** @test */
+    #[Test]
     public function gates_respect_roles_and_permissions()
     {
         $user = new ExternalUser(['id' => '1']);

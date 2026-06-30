@@ -2,6 +2,7 @@
 
 namespace Tests\Services;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Http;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Kroderdev\LaravelMicroserviceCore\Services\ApiGatewayClient;
@@ -14,7 +15,7 @@ class ApiGatewayClientTest extends TestCase
         return [MicroserviceServiceProvider::class];
     }
 
-    /** @test */
+    #[Test]
     public function post_sends_data_to_gateway()
     {
         Http::fake();
@@ -27,7 +28,7 @@ class ApiGatewayClientTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function put_sends_data_to_gateway()
     {
         Http::fake();

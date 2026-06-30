@@ -2,6 +2,7 @@
 
 namespace Tests\Auth;
 
+use PHPUnit\Framework\Attributes\Test;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -138,7 +139,7 @@ EOD;
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function attempt_sets_user_and_token()
     {
         $guard = Auth::guard('gateway');
@@ -147,7 +148,7 @@ EOD;
         $this->assertEquals('token123', Session::get($guard->getName()));
     }
 
-    /** @test */
+    #[Test]
     public function refreshes_token_when_invalid()
     {
         $guard = Auth::guard('gateway');
@@ -159,7 +160,7 @@ EOD;
         $this->assertTrue($user->hasPermissionTo('edit'));
     }
 
-    /** @test */
+    #[Test]
     public function can_disable_access_loading()
     {
         Config::set('microservice.gateway_guard.load_access', false);
@@ -169,7 +170,7 @@ EOD;
         $this->assertEmpty($user->getRoleNames());
     }
 
-    /** @test */
+    #[Test]
     public function validates_token_without_logging_key_contents()
     {
         $guard = Auth::guard('gateway');
@@ -197,7 +198,7 @@ EOD;
             ->once();
     }
 
-    /** @test */
+    #[Test]
     public function token_method_returns_current_token()
     {
         $guard = Auth::guard('gateway');

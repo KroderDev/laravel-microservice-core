@@ -2,6 +2,7 @@
 
 namespace Tests\Http;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Orchestra\Testbench\TestCase;
@@ -19,7 +20,7 @@ class HttpMacrosTest extends TestCase
         $app['config']->set('microservice.correlation.header', 'X-Correlation-ID');
     }
 
-    /** @test */
+    #[Test]
     public function macro_passes_correlation_header()
     {
         Http::fake();
@@ -37,7 +38,7 @@ class HttpMacrosTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function macro_without_request_has_no_header()
     {
         Http::fake();

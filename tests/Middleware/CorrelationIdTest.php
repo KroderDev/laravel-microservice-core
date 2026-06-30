@@ -2,13 +2,14 @@
 
 namespace Tests\Middleware;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\CorrelationId;
 use Orchestra\Testbench\TestCase;
 
 class CorrelationIdTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_generates_default_length_correlation_id()
     {
         $header = 'X-Correlation-ID';
@@ -23,7 +24,7 @@ class CorrelationIdTest extends TestCase
         $this->assertSame($length, strlen($response->headers->get($header)));
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_configured_length_correlation_id()
     {
         $header = 'X-Correlation-ID';

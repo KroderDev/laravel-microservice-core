@@ -2,6 +2,7 @@
 
 namespace Tests\Middleware;
 
+use PHPUnit\Framework\Attributes\Test;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
@@ -114,7 +115,7 @@ EOD;
         $app['config']->set('microservice.auth.jwt_algorithm', 'RS256');
     }
 
-    /** @test */
+    #[Test]
     public function test_rejects_request_without_token()
     {
         $response = $this->get('/secured');
@@ -122,7 +123,7 @@ EOD;
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function test_rejects_invalid_token()
     {
         $response = $this->get('/secured', [
@@ -132,7 +133,7 @@ EOD;
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function test_accepts_valid_token()
     {
         $payload = [
@@ -155,7 +156,7 @@ EOD;
         unlink(__DIR__.'/tmp_public.pem');
     }
 
-    /** @test */
+    #[Test]
     public function test_rejects_valid_token_and_bad_permissions()
     {
         $payload = [
@@ -177,7 +178,7 @@ EOD;
         unlink(__DIR__.'/tmp_public.pem');
     }
 
-    /** @test */
+    #[Test]
     public function test_accepts_valid_token_and_permissions()
     {
         $payload = [
@@ -200,7 +201,7 @@ EOD;
         unlink(__DIR__.'/tmp_public.pem');
     }
 
-    /** @test */
+    #[Test]
     public function test_extracts_oidc_roles_and_permissions()
     {
         config()->set('microservice.auth.user_identifier_claim', 'sub');

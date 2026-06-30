@@ -2,6 +2,7 @@
 
 namespace Tests\Traits;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Http\Client\Response as HttpResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
@@ -28,47 +29,47 @@ class ArrayableStub
 
 class ParsesApiResponseTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_returns_empty_array_for_null()
     {
         $this->assertSame([], DummyParser::parse(null));
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_http_response()
     {
         $response = new HttpResponse(new \GuzzleHttp\Psr7\Response(200, [], '{"foo":"bar"}'));
         $this->assertSame(['foo' => 'bar'], DummyParser::parse($response));
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_json_response()
     {
         $response = new JsonResponse(['foo' => 'bar']);
         $this->assertSame(['foo' => 'bar'], DummyParser::parse($response));
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_array()
     {
         $this->assertSame(['foo' => 'bar'], DummyParser::parse(['foo' => 'bar']));
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_collection()
     {
         $collection = new Collection(['foo' => 'bar']);
         $this->assertSame(['foo' => 'bar'], DummyParser::parse($collection));
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_json_string()
     {
         $json = '{"foo":"bar"}';
         $this->assertSame(['foo' => 'bar'], DummyParser::parse($json));
     }
 
-    /** @test */
+    #[Test]
     public function it_parses_object_with_to_array()
     {
         $object = new ArrayableStub();

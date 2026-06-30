@@ -2,6 +2,7 @@
 
 namespace Tests\Http;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
@@ -81,7 +82,7 @@ class GatewayAuthControllersTest extends TestCase
         Route::get('/socialite/{provider}/callback', [SocialiteController::class, 'callback']);
     }
 
-    /** @test */
+    #[Test]
     public function login_controller_authenticates_user()
     {
         $response = $this->postJson('/login', ['email' => 'foo', 'password' => 'bar']);
@@ -90,7 +91,7 @@ class GatewayAuthControllersTest extends TestCase
         $this->assertEquals('token_login', Session::get(Auth::guard('gateway')->getName()));
     }
 
-    /** @test */
+    #[Test]
     public function register_controller_logs_in_user()
     {
         $response = $this->postJson('/register', ['email' => 'foo', 'password' => 'bar']);
@@ -99,7 +100,7 @@ class GatewayAuthControllersTest extends TestCase
         $this->assertEquals('token_register', Session::get(Auth::guard('gateway')->getName()));
     }
 
-    /** @test */
+    #[Test]
     public function logout_controller_clears_session()
     {
         Session::put(Auth::guard('gateway')->getName(), 'tok');
@@ -108,27 +109,27 @@ class GatewayAuthControllersTest extends TestCase
         $this->assertNull(Session::get(Auth::guard('gateway')->getName()));
     }
 
-    /** @test */
+    #[Test]
     public function socialite_redirect_returns_redirect()
     {
         $this->get('/socialite/github/redirect')->assertRedirect('https://oauth.test/redirect');
     }
 
-    /** @test */
+    #[Test]
     public function socialite_callback_logs_in_user()
     {
         $this->get('/socialite/github/callback?code=a&state=b')->assertRedirect('/');
         $this->assertEquals('token_socialite', Session::get(Auth::guard('gateway')->getName()));
     }
 
-    /** @test */
+    #[Test]
     public function login_controller_redirects_if_requested()
     {
         $this->post('/login?redirect=/home', ['email' => 'foo', 'password' => 'bar'])
             ->assertRedirect('/home');
     }
 
-    /** @test */
+    #[Test]
     public function login_controller_redirects_to_intended_url_if_present()
     {
         $this->withSession(['url.intended' => '/dashboard'])
@@ -136,7 +137,7 @@ class GatewayAuthControllersTest extends TestCase
             ->assertRedirect('/dashboard');
     }
 
-    /** @test */
+    #[Test]
     public function login_controller_redirects_to_configured_default_when_no_json()
     {
         Config::set('microservice.gateway_auth.default_redirect', '/default');
@@ -145,7 +146,7 @@ class GatewayAuthControllersTest extends TestCase
             ->assertRedirect('/default');
     }
 
-    /** @test */
+    #[Test]
     public function login_controller_blocks_external_redirects()
     {
         Config::set('microservice.gateway_auth.default_redirect', '/default');
@@ -154,7 +155,7 @@ class GatewayAuthControllersTest extends TestCase
             ->assertRedirect('/default');
     }
 
-    /** @test */
+    #[Test]
     public function login_controller_allows_redirects_to_configured_domains()
     {
         Config::set('microservice.gateway_auth.allowed_redirect_hosts', ['good.test']);
@@ -163,21 +164,21 @@ class GatewayAuthControllersTest extends TestCase
             ->assertRedirect('https://good.test/welcome');
     }
 
-    /** @test */
+    #[Test]
     public function register_controller_redirects_if_requested()
     {
         $this->post('/register?redirect=/welcome', ['email' => 'foo', 'password' => 'bar'])
             ->assertRedirect('/welcome');
     }
 
-    /** @test */
+    #[Test]
     public function logout_controller_redirects_if_requested()
     {
         Session::put(Auth::guard('gateway')->getName(), 'tok');
         $this->post('/logout?redirect=/bye')->assertRedirect('/bye');
     }
 
-    /** @test */
+    #[Test]
     public function socialite_callback_honors_redirect_parameter()
     {
         $this->get('/socialite/github/callback?code=a&state=b&redirect=/foo')

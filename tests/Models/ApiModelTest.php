@@ -2,6 +2,7 @@
 
 namespace Tests\Models;
 
+use PHPUnit\Framework\Attributes\Test;
 use Orchestra\Testbench\TestCase;
 
 require_once __DIR__.'/../Services/FakeGatewayClient.php';
@@ -61,7 +62,7 @@ class ApiModelTest extends TestCase
         $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
     }
 
-    /** @test */
+    #[Test]
     public function all_users_gateway()
     {
         // Simulate the gateway returning an array of users
@@ -86,7 +87,7 @@ class ApiModelTest extends TestCase
         $this->assertEquals('Bob', $users[1]->name);
     }
 
-    /** @test */
+    #[Test]
     public function find_users_gateway()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -109,7 +110,7 @@ class ApiModelTest extends TestCase
         $this->assertEquals('Eve', $user->name);
     }
 
-    /** @test */
+    #[Test]
     public function find_users_gateway_returns_null_when_not_found()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -127,7 +128,7 @@ class ApiModelTest extends TestCase
         $this->assertNull($user);
     }
 
-    /** @test */
+    #[Test]
     public function create_users_gateway()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -148,7 +149,7 @@ class ApiModelTest extends TestCase
         $this->assertEquals(10, $user->id);
     }
 
-    /** @test */
+    #[Test]
     public function all_users_gateway_handles_empty_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -167,7 +168,7 @@ class ApiModelTest extends TestCase
         $this->assertCount(0, $users);
     }
 
-    /** @test */
+    #[Test]
     public function all_users_gateway_handles_api_failure()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -184,7 +185,7 @@ class ApiModelTest extends TestCase
         RemoteUser::all();
     }
 
-    /** @test */
+    #[Test]
     public function update_users_gateway()
     {
         $user = new RemoteUser(['id' => 9, 'name' => 'Old']);
@@ -197,7 +198,7 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
-    /** @test */
+    #[Test]
     public function update_users_respects_configured_method()
     {
         $this->app['config']->set('microservice.models.update_method', 'post');
@@ -212,7 +213,7 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
-    /** @test */
+    #[Test]
     public function delete_users_gateway()
     {
         $user = new RemoteUser(['id' => 4]);
@@ -224,7 +225,7 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
-    /** @test */
+    #[Test]
     public function delete_users_respects_configured_method()
     {
         $this->app['config']->set('microservice.models.delete_method', 'post');
@@ -238,7 +239,7 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
-    /** @test */
+    #[Test]
     public function delete_returns_false_on_failed_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -262,7 +263,7 @@ class ApiModelTest extends TestCase
         $this->assertFalse($user->delete());
     }
 
-    /** @test */
+    #[Test]
     public function static_update_users_gateway()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -282,7 +283,7 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
-    /** @test */
+    #[Test]
     public function static_update_returns_false_on_failed_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -310,7 +311,7 @@ class ApiModelTest extends TestCase
         $this->assertFalse($result);
     }
 
-    /** @test */
+    #[Test]
     public function instance_update_users_gateway()
     {
         $user = new RemoteUser(['id' => 11, 'name' => 'Old']);
@@ -323,7 +324,7 @@ class ApiModelTest extends TestCase
         ], $this->gateway->getCalls());
     }
 
-    /** @test */
+    #[Test]
     public function update_returns_false_on_failed_response()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -352,7 +353,7 @@ class ApiModelTest extends TestCase
         $this->assertFalse($user->update(['name' => 'Fail']));
     }
 
-    /** @test */
+    #[Test]
     public function update_propagates_api_gateway_exceptions()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -373,7 +374,7 @@ class ApiModelTest extends TestCase
         $user->update(['name' => 'Boom']);
     }
 
-    /** @test */
+    #[Test]
     public function find_or_fail_throws_when_not_found()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -391,7 +392,7 @@ class ApiModelTest extends TestCase
         RemoteUser::findOrFail(999);
     }
 
-    /** @test */
+    #[Test]
     public function update_or_fail_throws_on_failure()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -417,7 +418,7 @@ class ApiModelTest extends TestCase
         $user->updateOrFail(['name' => 'Fail']);
     }
 
-    /** @test */
+    #[Test]
     public function where_get_filters_results()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -441,7 +442,7 @@ class ApiModelTest extends TestCase
         $this->assertEquals('Alice', $users[0]->name);
     }
 
-    /** @test */
+    #[Test]
     public function from_api_response_maps_nested_relations()
     {
         $data = [
@@ -489,7 +490,7 @@ class ApiModelTest extends TestCase
         $this->assertEquals(789, $deep->children[0]->size);
     }
 
-    /** @test */
+    #[Test]
     public function paginate_returns_empty_paginator_on_404()
     {
         $this->gateway = new class () extends FakeGatewayClient {

@@ -2,6 +2,8 @@
 
 namespace Tests\Services;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
@@ -29,10 +31,8 @@ class ApiGatewayErrorTest extends TestCase
         return [[200], [201], [400], [401], [419], [500]];
     }
 
-    /**
-     * @test
-     * @dataProvider statusProvider
-     */
+    #[Test]
+    #[DataProvider('statusProvider')]
     public function propagates_gateway_status_code(int $status)
     {
         Http::fake(['*' => Http::response(['message' => 'm'], $status)]);
@@ -45,7 +45,7 @@ class ApiGatewayErrorTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function aborts_in_frontend_context()
     {
         Http::fake(['*' => Http::response(['message' => 'nope'], 401)]);
@@ -57,7 +57,7 @@ class ApiGatewayErrorTest extends TestCase
         $this->get('/gateway-error');
     }
 
-    /** @test */
+    #[Test]
     public function returns_json_in_service_context()
     {
         Http::fake(['*' => Http::response(['message' => 'bad'], 400)]);

@@ -2,6 +2,7 @@
 
 namespace Tests\Auth;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Auth\User;
 use Kroderdev\LaravelMicroserviceCore\Traits\HasAccess;
 use Orchestra\Testbench\TestCase;
@@ -15,7 +16,7 @@ class DefaultUser extends User
 
 class AccessTraitTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function trait_adds_access_methods_to_user()
     {
         $user = new DefaultUser(['id' => 1]);

@@ -2,6 +2,7 @@
 
 namespace Tests\Middleware;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Route;
 use Kroderdev\LaravelMicroserviceCore\Auth\ExternalUser;
 use Kroderdev\LaravelMicroserviceCore\Http\Middleware\PermissionMiddleware;
@@ -23,7 +24,7 @@ class AuthMiddlewareTest extends TestCase
         Route::middleware('permission:edit.posts')->get('/permission-protected', fn () => response()->json(['ok' => true]));
     }
 
-    /** @test */
+    #[Test]
     public function role_middleware_allows_user_with_required_role()
     {
         $user = new ExternalUser(['id' => 'user-1']);
@@ -33,7 +34,7 @@ class AuthMiddlewareTest extends TestCase
         $this->get('/role-protected')->assertOk()->assertJson(['ok' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function role_middleware_blocks_user_without_role()
     {
         $user = new ExternalUser(['id' => 'user-1']);
@@ -43,7 +44,7 @@ class AuthMiddlewareTest extends TestCase
         $this->get('/role-protected')->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function permission_middleware_allows_user_with_permission()
     {
         $user = new ExternalUser(['id' => 'user-1']);
@@ -53,7 +54,7 @@ class AuthMiddlewareTest extends TestCase
         $this->get('/permission-protected')->assertOk()->assertJson(['ok' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function permission_middleware_blocks_user_without_permission()
     {
         $user = new ExternalUser(['id' => 'user-1']);

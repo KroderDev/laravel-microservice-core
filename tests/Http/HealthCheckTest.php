@@ -2,6 +2,7 @@
 
 namespace Tests\Http;
 
+use PHPUnit\Framework\Attributes\Test;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
 use Orchestra\Testbench\TestCase;
 
@@ -12,7 +13,7 @@ class HealthCheckTest extends TestCase
         return [MicroserviceServiceProvider::class];
     }
 
-    /** @test */
+    #[Test]
     public function health_endpoint_returns_200()
     {
         $response = $this->get('/health');

@@ -2,6 +2,7 @@
 
 namespace Tests\Services;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Cache;
 use Kroderdev\LaravelMicroserviceCore\Contracts\AccessUserInterface;
@@ -54,7 +55,7 @@ class PermissionsClientTest extends TestCase
         return [\Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider::class];
     }
 
-    /** @test */
+    #[Test]
     public function retrieves_access_for_any_user_model()
     {
         $client = new PermissionsClient($this->app->make(ApiGatewayClientInterface::class));

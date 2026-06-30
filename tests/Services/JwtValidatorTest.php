@@ -2,6 +2,7 @@
 
 namespace Tests\Services;
 
+use PHPUnit\Framework\Attributes\Test;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Http;
 use Kroderdev\LaravelMicroserviceCore\Providers\MicroserviceServiceProvider;
@@ -15,7 +16,7 @@ class JwtValidatorTest extends TestCase
         return [MicroserviceServiceProvider::class];
     }
 
-    /** @test */
+    #[Test]
     public function it_decodes_tokens_using_jwks()
     {
         $privateKey = <<<'EOD'

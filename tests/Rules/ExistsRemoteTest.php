@@ -2,6 +2,7 @@
 
 namespace Tests\Rules;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Validator;
 use Orchestra\Testbench\TestCase;
 use Kroderdev\LaravelMicroserviceCore\Contracts\ApiGatewayClientInterface;
@@ -34,7 +35,7 @@ class ExistsRemoteTest extends TestCase
         $this->app->bind(ApiGatewayClientInterface::class, fn () => $this->gateway);
     }
 
-    /** @test */
+    #[Test]
     public function passes_when_all_ids_exist()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -59,7 +60,7 @@ class ExistsRemoteTest extends TestCase
         $this->assertTrue($validator->passes());
     }
 
-    /** @test */
+    #[Test]
     public function rule_object_works_the_same()
     {
         $this->gateway = new class () extends FakeGatewayClient {
@@ -78,7 +79,7 @@ class ExistsRemoteTest extends TestCase
         $this->assertTrue($validator->passes());
     }
 
-    /** @test */
+    #[Test]
     public function fails_when_any_id_is_missing()
     {
         $this->gateway = new class () extends FakeGatewayClient {
