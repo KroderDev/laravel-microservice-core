@@ -1,69 +1,38 @@
 auth:
-  - changed-files:
-    - any:
-      - src/Auth/**/*
+  - any: ['src/Auth/**/*']
 
 http:
-  - changed-files:
-    - any:
-      - src/Http/**/*
+  - any: ['src/Http/**/*']
 
 resilience:
-  - changed-files:
-    - any:
-      - src/Resilience/**/*
+  - any: ['src/Resilience/**/*']
 
 services:
-  - changed-files:
-    - any:
-      - src/Services/**/*
+  - any: ['src/Services/**/*']
 
 providers:
-  - changed-files:
-    - any:
-      - src/Providers/**/*
+  - any: ['src/Providers/**/*']
 
 contracts:
-  - changed-files:
-    - any:
-      - src/Contracts/**/*
+  - any: ['src/Contracts/**/*']
 
 exceptions:
-  - changed-files:
-    - any:
-      - src/Exceptions/**/*
+  - any: ['src/Exceptions/**/*']
 
 traits:
-  - changed-files:
-    - any:
-      - src/Traits/**/*
+  - any: ['src/Traits/**/*']
 
 config:
-  - changed-files:
-    - any:
-      - src/config/**/*
+  - any: ['src/config/**/*']
 
 tests:
-  - changed-files:
-    - any:
-      - tests/**/*
+  - any: ['tests/**/*']
 
 dependencies:
-  - changed-files:
-    - any:
-      - composer.json
-      - composer.lock
+  - any: ['composer.json', 'composer.lock']
 
 ci:
-  - changed-files:
-    - any:
-      - .github/**/*
+  - any: ['.github/**/*']
 
 documentation:
-  - changed-files:
-    - any:
-      - README.md
-      - CHANGELOG.md
-      - CONTRIBUTING.md
-      - AGENTS.md
-      - ROADMAP.md
+  - any: ['README.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'AGENTS.md', 'ROADMAP.md']
