@@ -1,43 +1,69 @@
 auth:
-  - src/Auth/**/*
+  - changed-files:
+    - any:
+      - src/Auth/**/*
 
 http:
-  - src/Http/**/*
+  - changed-files:
+    - any:
+      - src/Http/**/*
 
 resilience:
-  - src/Resilience/**/*
+  - changed-files:
+    - any:
+      - src/Resilience/**/*
 
 services:
-  - src/Services/**/*
+  - changed-files:
+    - any:
+      - src/Services/**/*
 
 providers:
-  - src/Providers/**/*
+  - changed-files:
+    - any:
+      - src/Providers/**/*
 
 contracts:
-  - src/Contracts/**/*
+  - changed-files:
+    - any:
+      - src/Contracts/**/*
 
 exceptions:
-  - src/Exceptions/**/*
+  - changed-files:
+    - any:
+      - src/Exceptions/**/*
 
 traits:
-  - src/Traits/**/*
+  - changed-files:
+    - any:
+      - src/Traits/**/*
 
 config:
-  - src/config/**/*
+  - changed-files:
+    - any:
+      - src/config/**/*
 
 tests:
-  - tests/**/*
+  - changed-files:
+    - any:
+      - tests/**/*
 
 dependencies:
-  - composer.json
-  - composer.lock
+  - changed-files:
+    - any:
+      - composer.json
+      - composer.lock
 
 ci:
-  - .github/**/*
+  - changed-files:
+    - any:
+      - .github/**/*
 
 documentation:
-  - README.md
-  - CHANGELOG.md
-  - CONTRIBUTING.md
-  - AGENTS.md
-  - ROADMAP.md
+  - changed-files:
+    - any:
+      - README.md
+      - CHANGELOG.md
+      - CONTRIBUTING.md
+      - AGENTS.md
+      - ROADMAP.md
